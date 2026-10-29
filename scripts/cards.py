@@ -236,10 +236,15 @@ def stack(groups: list, t: Theme) -> str:
     """groups: [(group name, [Brand, ...]), ...]"""
     pad, gap_x, gap_y = 30, 12, 12
     label_font, tracking = 15, 1.4
-    label_w = max(170, max(len(name) * (label_font * MONO_ADVANCE + tracking) for name, _ in groups) + 44)
+    widest = max((len(name) for name, _ in groups), default=0)
+    label_w = max(170, widest * (label_font * MONO_ADVANCE + tracking) + 44)
     left = pad + label_w
 
     parts, y = [], pad
+    if not groups:
+        parts.append(f'<text x="{pad}" y="{pad + PILL_H / 2 + 6}" class="sans" font-size="17" fill="{t.muted}">'
+                     'No tech stack yet: add groups to "stack" in profile.json.</text>')
+        y += PILL_H + gap_y
     for g, (name, brands) in enumerate(groups):
         accent = (t.violet, t.cyan, t.pink)[g % 3]
         parts.append(f'<rect x="{pad}" y="{y + PILL_H / 2 - 10}" width="3" height="20" rx="1.5" fill="{accent}"/>'
@@ -276,11 +281,16 @@ def _day(d, today) -> str:
 
 
 def _span(streak: Streak, today, empty: str) -> str:
+    """A date range short enough for its column: at most 23 characters."""
     if not streak.length:
         return empty
-    if streak.start == streak.end:
-        return _day(streak.start, today)
-    return f"{_day(streak.start, today)} – {_day(streak.end, today)}"
+    start, end = streak.start, streak.end
+    if start == end:
+        return _day(start, today)
+    if start.year == end.year:
+        year = "" if end.year == today.year else f", {end.year}"
+        return f"{start:%b} {start.day} – {end:%b} {end.day}{year}"
+    return f"{start:%b} {start.day} '{start:%y} – {end:%b} {end.day} '{end:%y}"
 
 
 def _icon(paths: list, x: float, y: float, color: str, size: float = 16) -> str:
@@ -323,11 +333,11 @@ def activity(s: Summary, octicons: dict, t: Theme) -> str:
         x = left + i * 224
         parts.append(_icon(octicons[icon], x, 74, color, size=17))
         parts.append(f'<text x="{x + 26}" y="88" class="sans" font-size="17" fill="{t.muted}">{esc(title)}</text>')
+        # The unit is a tspan so it follows the number's real width in whatever font renders it.
+        unit_span = (f'<tspan dx="10" font-size="20" font-weight="400" fill="{t.muted}">{unit}</tspan>'
+                     if unit else "")
         parts.append(f'<text x="{x - 2}" y="144" class="sans" font-size="48" font-weight="700" '
-                     f'fill="{t.text}">{esc(value)}</text>')
-        if unit:
-            ux = x + text_width(value, 48, bold=True) + 8
-            parts.append(f'<text x="{num(ux)}" y="144" class="sans" font-size="20" fill="{t.muted}">{unit}</text>')
+                     f'fill="{t.text}">{esc(value)}{unit_span}</text>')
         parts.append(f'<text x="{x}" y="172" class="mono" font-size="14" fill="{t.faint}">{esc(sub)}</text>')
 
     parts.append(f'<path d="M{left} 198H{split - 40}" stroke="{t.border}"/>')
@@ -357,15 +367,18 @@ def activity(s: Summary, octicons: dict, t: Theme) -> str:
             segments.append(f'<rect x="{num(x)}" y="72" width="{num(max(w - gap, 1.5))}" height="10" '
                             f'fill="{lang.color}"/>')
             x += w
+        # Names are also clipped short of the percentages, for fonts wider than the estimate.
+        name_clips = "".join(f'<clipPath id="names{c}"><rect x="{lang_x + c * 206 + 19}" y="100" width="137" '
+                             'height="130"/></clipPath>' for c in range(2))
         parts.append(f'<clipPath id="bar"><rect x="{lang_x}" y="72" width="{bar_w}" height="10" rx="5"/></clipPath>'
-                     f'<g clip-path="url(#bar)">{"".join(segments)}</g>')
+                     f'{name_clips}<g clip-path="url(#bar)">{"".join(segments)}</g>')
         for i, lang in enumerate(s.languages):
             cx, y = lang_x + (i // 3) * 206, 126 + (i % 3) * 40
             share = lang.share * 100
             pct = f"{share:.0f}%" if share >= 9.95 else f"{share:.1f}%"
             parts.append(f'<circle cx="{cx + 5}" cy="{y - 6}" r="5.5" fill="{lang.color}"/>'
-                         f'<text x="{cx + 19}" y="{y}" class="sans" font-size="17" fill="{t.text}">'
-                         f"{esc(_fit(lang.name, 17, 134))}</text>"
+                         f'<text x="{cx + 19}" y="{y}" class="sans" font-size="17" fill="{t.text}" '
+                         f'clip-path="url(#names{i // 3})">{esc(_fit(lang.name, 17, 134))}</text>'
                          f'<text x="{cx + 196}" y="{y}" text-anchor="end" class="mono" font-size="15" '
                          f'fill="{t.muted}">{pct}</text>')
     else:
@@ -374,9 +387,9 @@ def activity(s: Summary, octicons: dict, t: Theme) -> str:
                      f'<text x="{lang_x}" y="154" class="sans" font-size="15" fill="{t.muted}">'
                      "Languages from public repos will show up here.</text>")
 
-    parts.append(f'<text x="{left}" y="300" class="mono" font-size="13" fill="{t.faint}">'
+    parts.append(f'<text x="{left}" y="300" class="mono" font-size="14" fill="{t.faint}">'
                  f"@{esc(s.login)} · on GitHub since {s.joined:%b %Y}</text>"
-                 f'<text x="{right}" y="300" text-anchor="end" class="mono" font-size="13" fill="{t.faint}">'
+                 f'<text x="{right}" y="300" text-anchor="end" class="mono" font-size="14" fill="{t.faint}">'
                  f"updated {s.today.day} {s.today:%b %Y}</text>")
 
     title = (f"{s.login} on GitHub: {s.contributions:,} contributions, current streak {s.current.length} "

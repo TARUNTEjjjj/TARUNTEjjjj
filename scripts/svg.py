@@ -38,7 +38,7 @@ THEMES = (
     Theme(
         name="dark",
         bg="#0d1117", panel="#161b22", border="#30363d",
-        text="#e6edf3", muted="#9198a1", faint="#6e7681",
+        text="#e6edf3", muted="#9198a1", faint="#7d8590",
         cyan="#22d3ee", violet="#a78bfa", pink="#f472b6",
         name_from="#c4b5fd", name_to="#67e8f9",
         glow_a="#7c3aed", glow_b="#0891b2", glow_opacity=0.30,
@@ -46,7 +46,7 @@ THEMES = (
     Theme(
         name="light",
         bg="#ffffff", panel="#f6f8fa", border="#d0d7de",
-        text="#1f2328", muted="#59636e", faint="#818b98",
+        text="#1f2328", muted="#59636e", faint="#6e7781",
         cyan="#0891b2", violet="#7c3aed", pink="#db2777",
         name_from="#6d28d9", name_to="#0e7490",
         glow_a="#c4b5fd", glow_b="#a5f3fc", glow_opacity=0.55,

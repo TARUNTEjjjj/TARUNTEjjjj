@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 import urllib.error
 import urllib.request
@@ -13,14 +14,16 @@ from typing import Optional
 
 API = "https://api.github.com/graphql"
 
+# Pull requests and issues are counted with an is:public search: the user's own
+# connections would include private repositories whenever the token can see them.
 USER_QUERY = """
-query($login: String!, $cursor: String) {
+query($login: String!, $cursor: String, $prSearch: String!, $issueSearch: String!) {
+  prs: search(query: $prSearch, type: ISSUE, first: 1) { issueCount }
+  issues: search(query: $issueSearch, type: ISSUE, first: 1) { issueCount }
   user(login: $login) {
     login
     createdAt
     followers { totalCount }
-    pullRequests { totalCount }
-    issues { totalCount }
     publicRepos: repositories(ownerAffiliations: OWNER, privacy: PUBLIC) { totalCount }
     repositories(first: 100, after: $cursor, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false) {
       pageInfo { hasNextPage endCursor }
@@ -74,9 +77,15 @@ def _parse_time(stamp: str) -> datetime:
 def fetch(login: str, token: str, now: Optional[datetime] = None) -> dict:
     """Return the raw numbers in the same shape the --data fixtures use."""
     now = now or datetime.now(timezone.utc)
+    variables = {
+        "login": login,
+        "prSearch": f"author:{login} is:pr is:public",
+        "issueSearch": f"author:{login} is:issue is:public",
+    }
     user, repos, cursor = None, [], None
     while True:
-        user = _graphql(USER_QUERY, {"login": login, "cursor": cursor}, token)["user"]
+        data = _graphql(USER_QUERY, {**variables, "cursor": cursor}, token)
+        user = data["user"]
         if user is None:
             raise RuntimeError(f"GitHub user {login!r} not found")
         page = user["repositories"]
@@ -118,8 +127,8 @@ def fetch(login: str, token: str, now: Optional[datetime] = None) -> dict:
         "login": user["login"],
         "createdAt": user["createdAt"],
         "followers": user["followers"]["totalCount"],
-        "pullRequests": user["pullRequests"]["totalCount"],
-        "issues": user["issues"]["totalCount"],
+        "pullRequests": data["prs"]["issueCount"],
+        "issues": data["issues"]["issueCount"],
         "publicRepos": user["publicRepos"]["totalCount"],
         "commits": commits,
         "repos": repos,
@@ -194,7 +203,8 @@ def top_languages(repos: list, exclude_repos: list, hide: list, limit: int = 6) 
             if lang["name"].lower() in skip_langs:
                 continue
             sizes[lang["name"]] += lang["size"]
-            colors[lang["name"]] = lang["color"] or "#8b949e"
+            # Colours come from the API and go straight into an SVG attribute: accept hex only.
+            colors[lang["name"]] = lang["color"] if re.fullmatch(r"#[0-9A-Fa-f]{3,8}", lang["color"] or "") else "#8b949e"
     total = sum(sizes.values())
     if not total:
         return []

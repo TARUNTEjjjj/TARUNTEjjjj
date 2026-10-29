@@ -1,6 +1,8 @@
 <!--
-  The images below are generated: edit profile.json (banner text, tech stack) and let
-  the "Build profile" workflow redraw them, or run `python3 scripts/build.py` locally.
+  The images below are generated: edit profile.json (banner text, tech stack) and the
+  "Build profile" workflow redraws them. `python3 scripts/build.py` redraws the banner and
+  stack locally; only the workflow draws the activity card, because its token sees public
+  data only.
 -->
 
 <picture>
@@ -44,4 +46,4 @@ Uncomment and fill in to add contact badges:
 [![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:YOU@EXAMPLE.COM)
 -->
 
-<p align="right"><sub>Cards drawn by <a href="scripts/build.py">scripts/build.py</a> and refreshed daily by GitHub Actions · logos from <a href="https://simpleicons.org">Simple Icons</a> (Git logo by Jason Long, CC BY 3.0)</sub></p>
+<p align="right"><sub>Cards drawn by <a href="scripts/build.py">scripts/build.py</a> and refreshed daily by GitHub Actions · logos via <a href="https://simpleicons.org">Simple Icons</a>; HTML5 logo by W3C and Git logo by Jason Long, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> · <a href="THIRD_PARTY_NOTICES.md">all credits</a></sub></p>

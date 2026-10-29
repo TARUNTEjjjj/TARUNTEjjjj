@@ -23,7 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
+      # Actions are pinned to reviewed commits (this job can push); Dependabot proposes updates.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main # the branch tip, not the commit that triggered a queued run
 
       - name: Draw banner, tech stack and activity cards
         run: python3 scripts/build.py
@@ -31,7 +34,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Draw contribution snake
-        uses: Platane/snk/svg-only@v3
+        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3.5.0
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
@@ -42,10 +45,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets
+          git add assets scripts/icons.json
           if git diff --cached --quiet; then
             echo "Cards are already up to date."
-          else
-            git commit -m "Refresh profile cards"
-            git push
+            exit 0
           fi
+          git commit -m "Refresh profile cards"
+          # Someone may have pushed while this ran: replay the commit on top and try again.
+          for attempt in 1 2 3; do
+            git push && exit 0
+            git pull --rebase origin main
+          done
+          exit 1
