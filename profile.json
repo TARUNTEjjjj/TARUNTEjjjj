@@ -1,0 +1,21 @@
+{
+  "login": "TARUNTEjjjj",
+  "name": "Tarun Tej",
+  "greeting": "Hi there, I'm",
+  "typing": [
+    "AI / ML enthusiast",
+    "Teaching machines to learn",
+    "Python · C++ · PyTorch · React",
+    "Learning by building"
+  ],
+  "stack": [
+    { "group": "Languages", "items": ["c", "cplusplus", "python", "javascript", "typescript"] },
+    { "group": "ML & data", "items": ["numpy", "pandas", "pytorch", "scikitlearn"] },
+    { "group": "Web", "items": ["html5", "css", "react", "nodedotjs"] },
+    { "group": "Tools", "items": ["git", "github"] }
+  ],
+  "languages": {
+    "exclude_repos": ["TARUNTEjjjj"],
+    "hide": []
+  }
+}
