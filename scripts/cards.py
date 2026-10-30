@@ -194,8 +194,10 @@ def header(profile: dict, t: Theme) -> str:
 @dataclass
 class Brand:
     label: str
-    hex: Optional[str]  # None -> monogram tile in the theme accent
-    path: Optional[str]
+    hex: Optional[str]  # with path: a Simple Icons glyph on a tile of this colour
+    path: Optional[str]  # neither path nor art: a letter tile in the theme accent
+    art: Optional[dict] = None  # an owner's official logo, drawn unaltered: {"viewBox", "body"}
+    art_dark: Optional[dict] = None  # the owner's variant for dark backgrounds, if there is one
 
 
 PILL_H, TILE, PILL_FONT = 56, 36, 20
@@ -208,24 +210,32 @@ def _pill_width(brand: Brand) -> float:
 
 
 def _pill(x: float, y: float, brand: Brand, t: Theme) -> str:
-    if brand.path:
-        fill = f"#{brand.hex}"
-        glyph_color = "#ffffff" if contrast("#ffffff", fill) >= 3 else "#0d1117"
-        margin = 7
-        scale = (TILE - 2 * margin) / 24  # Simple Icons are drawn on a 24px grid
-        glyph = (f'<path transform="translate({num(TILE_INSET + margin)} {num(TILE_INSET + margin)}) '
-                 f'scale({num(scale)})" fill="{glyph_color}" d="{brand.path}"/>')
+    if brand.art:
+        # Official logos are drawn exactly as supplied: no tile behind them, no recolouring.
+        art = brand.art_dark if t.name == "dark" and brand.art_dark else brand.art
+        mark = (f'<svg x="{num(TILE_INSET)}" y="{num(TILE_INSET)}" width="{TILE}" height="{TILE}" '
+                f'viewBox="{esc(art["viewBox"])}">{art["body"]}</svg>')
     else:
-        fill = t.violet
-        glyph = (f'<text x="{num(TILE_INSET + TILE / 2)}" y="{num(TILE_INSET + TILE / 2 + 7)}" text-anchor="middle" '
-                 f'class="sans" font-size="19" font-weight="700" fill="#ffffff">{esc(brand.label[:1].upper())}</text>')
-    # Near-black logos (GitHub, NumPy...) would melt into a dark card without an outline.
-    outline = f' stroke="{t.border}"' if contrast(fill, t.panel) < 1.5 else ""
+        if brand.path:
+            fill = f"#{brand.hex}"
+            glyph_color = "#ffffff" if contrast("#ffffff", fill) >= 3 else "#0d1117"
+            margin = 7
+            scale = (TILE - 2 * margin) / 24  # Simple Icons are drawn on a 24px grid
+            glyph = (f'<path transform="translate({num(TILE_INSET + margin)} {num(TILE_INSET + margin)}) '
+                     f'scale({num(scale)})" fill="{glyph_color}" d="{brand.path}"/>')
+        else:
+            fill = t.violet
+            glyph = (f'<text x="{num(TILE_INSET + TILE / 2)}" y="{num(TILE_INSET + TILE / 2 + 7)}" '
+                     f'text-anchor="middle" class="sans" font-size="19" font-weight="700" '
+                     f'fill="#ffffff">{esc(brand.label[:1].upper())}</text>')
+        # Near-black logos (GitHub, NumPy...) would melt into a dark card without an outline.
+        outline = f' stroke="{t.border}"' if contrast(fill, t.panel) < 1.5 else ""
+        mark = (f'<rect x="{num(TILE_INSET)}" y="{num(TILE_INSET)}" width="{TILE}" height="{TILE}" rx="9" '
+                f'fill="{fill}"{outline}/>{glyph}')
     return (
         f'<g transform="translate({num(x)} {num(y)})">'
         f'<rect width="{num(_pill_width(brand))}" height="{PILL_H}" rx="14" fill="{t.panel}" stroke="{t.border}"/>'
-        f'<rect x="{num(TILE_INSET)}" y="{num(TILE_INSET)}" width="{TILE}" height="{TILE}" rx="9" fill="{fill}"{outline}/>'
-        f"{glyph}"
+        f"{mark}"
         f'<text x="{num(LABEL_X)}" y="{num(PILL_H / 2 + PILL_FONT * 0.36)}" class="sans" font-size="{PILL_FONT}" '
         f'font-weight="500" fill="{t.text}">{esc(brand.label)}</text>'
         "</g>"

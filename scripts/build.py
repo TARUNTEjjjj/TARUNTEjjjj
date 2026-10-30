@@ -7,6 +7,8 @@
 The activity card is only built inside GitHub Actions: the workflow's token sees public
 data only, while a personal token would count private repositories on a public page.
 Edit profile.json to change the text and tech stack; never edit the SVGs by hand.
+Logos come only from scripts/icons.json, where they are added by hand after checking
+their terms; a technology without an entry there is drawn as a letter tile.
 Standard library only, so it runs on any GitHub Actions runner without installing anything.
 """
 
@@ -17,7 +19,6 @@ import json
 import os
 import re
 import sys
-import urllib.request
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -27,83 +28,55 @@ from svg import THEMES
 
 ROOT = Path(__file__).resolve().parent.parent
 ICONS = Path(__file__).resolve().parent / "icons.json"
-SIMPLE_ICONS = "https://cdn.jsdelivr.net/npm/simple-icons@16"
 MAX_TYPING_CHARS = 38  # longer lines would run into the network graphic
 
 
-def _download(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "profile-card-builder"})
-    with urllib.request.urlopen(request, timeout=20) as response:
-        return response.read()
+def load_icons(path: Path = ICONS) -> dict:
+    """icons.json, refusing duplicate keys (json would silently keep the last one)."""
+    def no_duplicates(pairs):
+        keys = [key for key, _ in pairs]
+        repeated = sorted({key for key in keys if keys.count(key) > 1})
+        if repeated:
+            sys.exit(f"{path.name}: duplicate key {', '.join(repeated)}; keep one entry per logo.")
+        return dict(pairs)
+
+    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates)
 
 
-FREE_LICENSES = {"CC0-1.0", "Unlicense"}  # no attribution or notice needed
+def warn(message: str) -> None:
+    print(f"  ! {message}", file=sys.stderr)
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        print(f"::warning title=Tech stack card::{message}")  # shows on the workflow run's summary
 
 
-def fetch_brands(slugs: list) -> dict:
-    """Look up logos missing from icons.json on Simple Icons, one entry per slug.
-
-    A logo whose licence Simple Icons records with conditions (MIT, CC BY, ...)
-    comes back without its shape, so it is drawn as a letter tile until it is
-    credited in THIRD_PARTY_NOTICES.md. Every other logo comes back complete with
-    its source, so its terms can be checked. A slug Simple Icons doesn't know
-    comes back as a bare title. A network failure stops the build, so a CDN
-    hiccup never publishes letter tiles in place of real logos.
-    """
-    found = {}
-    try:
-        catalog = {icon.get("slug"): icon for icon in json.loads(_download(f"{SIMPLE_ICONS}/data/simple-icons.json"))}
-        for slug in slugs:
-            icon = catalog.get(slug)
-            if not icon:
-                found[slug] = {"title": slug, "note": "not in Simple Icons"}
-                continue
-            entry = {"title": icon["title"], "source": icon.get("source", "")}
-            license_type = (icon.get("license") or {}).get("type")
-            if license_type:
-                entry["license"] = license_type
-            if license_type and license_type not in FREE_LICENSES:
-                found[slug] = entry
-                continue
-            svg_text = _download(f"{SIMPLE_ICONS}/icons/{slug}.svg").decode()
-            path = re.search(r'<path d="([MmLlHhVvCcSsQqTtAaZz0-9.,\s+\-eE]+)"', svg_text)
-            if path and re.fullmatch(r"[0-9A-Fa-f]{6}", icon.get("hex", "")):
-                found[slug] = {**entry, "hex": icon["hex"], "path": path.group(1)}
-                print(f"  + {icon['title']} logo added; check its terms at {entry['source'] or 'simpleicons.org'}")
-            else:
-                found[slug] = {**entry, "note": "unexpected Simple Icons data"}
-    except (OSError, ValueError) as error:
-        sys.exit(f"Couldn't fetch logos from Simple Icons ({error}); try again later.")
-    return found
+def brand_for(slug: str, label: str, data: dict) -> cards.Brand:
+    if "art" in data:
+        for key in ("art", "art_dark"):
+            art = data.get(key)
+            if art is not None and not (isinstance(art, dict) and art.get("viewBox") and art.get("body")):
+                sys.exit(f"scripts/icons.json: {slug} {key} needs a viewBox and a body.")
+        return cards.Brand(label, None, None, data["art"], data.get("art_dark"))
+    if "path" in data:
+        if not re.fullmatch(r"[0-9A-Fa-f]{6}", str(data.get("hex", ""))):
+            sys.exit(f"scripts/icons.json: {slug} has a path but no 6-digit hex colour.")
+        return cards.Brand(label, data["hex"], data["path"])
+    return cards.Brand(label, None, None)
 
 
 def stack_groups(profile: dict, icons: dict) -> list:
-    """profile.json stack entries are a Simple Icons slug, or {"icon": slug, "label": text}."""
-    config = profile.get("stack") or []
-    entries = [{"icon": item} if isinstance(item, str) else item for group in config for item in group["items"]]
-    brands = icons["brands"]
-    missing = sorted({e["icon"] for e in entries if e.get("icon") and e["icon"] not in brands})
-    if missing:
-        # Cache every answer, refusals included, so later builds need no network.
-        # The workflow commits this file along with the cards.
-        brands.update(fetch_brands(missing))
-        ICONS.write_text(json.dumps(icons, indent=2) + "\n", encoding="utf-8")
-        print(f"  cached {', '.join(missing)} in {ICONS.relative_to(ROOT)}")
-    for slug in sorted({e["icon"] for e in entries if e.get("icon")}):
-        brand = brands[slug]
-        if "path" not in brand:
-            reason = brand.get("note") or f"its {brand.get('license', 'licence')} logo needs a credit in THIRD_PARTY_NOTICES.md"
-            print(f"  ! {brand['title']}: letter tile, {reason} (delete its scripts/icons.json entry to look it up again)",
-                  file=sys.stderr)
-
+    """profile.json stack entries are an icons.json slug, or {"icon": slug, "label": text}."""
     groups = []
-    for group in config:
+    for group in profile.get("stack") or []:
         items = []
         for item in group["items"]:
             entry = {"icon": item} if isinstance(item, str) else item
-            data = brands.get(entry.get("icon") or "", {})
-            label = entry.get("label") or data.get("title") or entry.get("icon", "?")
-            items.append(cards.Brand(label, data.get("hex"), data.get("path")))
+            slug = entry.get("icon") or ""
+            data = icons["brands"].get(slug, {}) if slug else {}
+            label = entry.get("label") or data.get("title") or slug or "?"
+            if slug and not data:
+                warn(f"{label}: no logo in scripts/icons.json, so it is drawn as a letter tile. "
+                     "Add one there by hand after checking its terms (see THIRD_PARTY_NOTICES.md).")
+            items.append(brand_for(slug, label, data))
         groups.append((group["group"], items))
     return groups
 
@@ -133,7 +106,7 @@ def main(argv=None) -> None:
     args = parser.parse_args(argv)
 
     profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
-    icons = json.loads(ICONS.read_text(encoding="utf-8"))
+    icons = load_icons()
     check(profile)
     out = ROOT / "assets"
     out.mkdir(exist_ok=True)

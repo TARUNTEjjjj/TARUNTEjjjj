@@ -4,18 +4,32 @@ The cards in `assets/` and the icon data in `scripts/icons.json` include artwork
 
 ## Brand logos (tech stack card)
 
-The logo shapes come from [Simple Icons](https://simpleicons.org) 16.36.0 and are drawn in a single colour on a tile of the brand colour. Simple Icons is released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/), but that does not cover every logo in it. These logos have their own terms:
+Most logo shapes come from [Simple Icons](https://simpleicons.org) 16.36.0 and are drawn in a single colour on a tile of the brand colour. The C++, Python and pandas logos are instead their owners' official artwork, drawn exactly as supplied, because their terms don't allow altered versions. Simple Icons is released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/), but that does not cover every logo in it. These logos have their own terms:
 
 - **HTML5 logo** by [W3C](https://www.w3.org/html/logo/), licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Changed: single-colour version.
 - **Git logo** by [Jason Long](https://git-scm.com/community/logos), licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Changed: single-colour version.
-- **C++ logo** by Jeremy Kratz, a trademark of the Standard C++ Foundation, used under the Foundation's [terms of use](https://isocpp.org/home/terms-of-use).
+- **C++ logo** by Jeremy Kratz, from [isocpp/logos](https://github.com/isocpp/logos), used unaltered under the Standard C++ Foundation's [terms of use](https://isocpp.org/home/terms-of-use).
+- **Python logo**: the official logo from [python.org](https://www.python.org/community/logos/), used unaltered under the [PSF Trademark Usage Policy](https://www.python.org/psf/trademarks/).
+- **pandas logo**: the official pandas mark, and its white version on dark backgrounds, from [pandas.pydata.org](https://pandas.pydata.org/about/citing.html), used unaltered.
 - **C logo**: public domain ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:The_C_Programming_Language_logo.svg)).
 - **CSS logo**: CC0 1.0 ([CSS-Next/logo.css](https://github.com/CSS-Next/logo.css)).
 - **JavaScript, React, PyTorch and scikit-learn logos**: under the licences of the repositories they come from, reproduced below.
 
-The GitHub, Node.js, NumPy, pandas, Python and TypeScript logos come from their owners' brand pages and are used under Simple Icons' release and those brand guidelines.
+The GitHub, Node.js, NumPy and TypeScript logos are shown in single-colour versions like those their owners' brand pages provide.
 
-When the build adds a logo from Simple Icons, it records the logo's source in `scripts/icons.json`. A logo that Simple Icons lists under a licence with conditions is drawn as a letter tile until its shape and credit are added here by hand.
+Logos are added to `scripts/icons.json` by hand, after checking their terms, and each entry records its source. The build never downloads logos: a technology without an entry there is drawn as a letter tile.
+
+## Trademarks
+
+- Python and the Python logos are trademarks or registered trademarks of the Python Software Foundation.
+- PyTorch, the PyTorch logo and any related marks are trademarks of The Linux Foundation.
+- Node.js® is a trademark of the OpenJS Foundation.
+- The C++ logo is a trademark of the Standard C++ Foundation.
+- All other names and logos are trademarks of their respective owners.
+
+## Licence texts
+
+The JavaScript, React, PyTorch and scikit-learn logos come from repositories under these licences.
 
 ### JavaScript logo
 
