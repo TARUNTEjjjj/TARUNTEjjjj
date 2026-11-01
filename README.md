@@ -19,6 +19,11 @@ I'm an AI / ML enthusiast who likes to understand how models work under the hood
 - 🌐 Building for the **web** with JavaScript, TypeScript, React and Node.js
 - 🌱 Learning in public: new projects land here as I build them
 
+## Projects
+
+- **[Axiom SAT Math](https://axiom-sat.pages.dev/)**: free, open-source SAT-style math practice with original generated questions, timed sessions, worked review and progress saved on your device. Plain HTML, CSS and JavaScript ([source](https://github.com/TARUNTEjjjj/axiom-sat)).
+- **[Forge](https://forge-learning-academy.pages.dev/)**: learn Python, Git, algorithms and software engineering step by step, with a 3D learning map and hands-on coding practice. Built with React, TypeScript and Vite.
+
 ## Tech stack
 
 <picture>
