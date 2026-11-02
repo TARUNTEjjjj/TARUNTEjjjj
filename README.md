@@ -23,7 +23,7 @@ I'm Tarun Tej, learning **AI, algorithms and mathematics** through implementatio
 | Project | What it explores | Explore the work |
 | --- | --- | --- |
 | **[AxiomMath](https://github.com/TARUNTEjjjj/axiom-math)** | Exact rational arithmetic and expression parsing in C++20, with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. | [Design and arithmetic reasoning](https://github.com/TARUNTEjjjj/axiom-math/blob/main/docs/engineering.md) · [Verification](https://github.com/TARUNTEjjjj/axiom-math/blob/main/docs/verification.md) |
-| **[PocketKV](https://github.com/TARUNTEjjjj/pocketkv)** | A persistent C++20 key-value store exploring append-only logs, indexing, checksums, file locking and recovery. | [Storage design and complexity](https://github.com/TARUNTEjjjj/pocketkv/blob/main/docs/engineering.md) |
+| **[PocketKV](https://github.com/TARUNTEjjjj/pocketkv)** | A persistent C++20 key-value store exploring append-only logs, indexing, checksums, file locking and recovery. | [Storage design](https://github.com/TARUNTEjjjj/pocketkv/blob/main/docs/engineering.md) · [Reproducible benchmark and results](https://github.com/TARUNTEjjjj/pocketkv/blob/main/docs/benchmarks.md) |
 | **[Axiom SAT Math](https://github.com/TARUNTEjjjj/axiom-sat)** | Browser-based maths practice with reproducible question generation, worked solutions and recoverable local progress. | [Try the app](https://axiom-sat.pages.dev/) · [Design notes](https://github.com/TARUNTEjjjj/axiom-sat/blob/main/docs/engineering.md) |
 | **Forge** | Interactive Python, Git and algorithms learning with browser-based exercises, built with React and TypeScript. | [Try the learning map](https://forge-learning-academy.pages.dev/) |
 
