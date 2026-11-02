@@ -3,10 +3,10 @@
   "name": "Tarun Tej",
   "greeting": "Hi there, I'm",
   "typing": [
-    "AI / ML enthusiast",
-    "Teaching machines to learn",
-    "Python · C++ · PyTorch · React",
-    "Learning by building"
+    "AI · algorithms · mathematics",
+    "Learning through implementation",
+    "Python · C++ · TypeScript",
+    "Code, experiments and reasoning"
   ],
   "stack": [
     { "group": "Languages", "items": ["c", "cplusplus", "python", "javascript", "typescript"] },
@@ -19,3 +19,4 @@
     "hide": []
   }
 }
+

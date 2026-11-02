@@ -7,22 +7,27 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg">
-  <img alt="Hi there, I'm Tarun Tej, an AI / ML enthusiast" src="assets/header-light.svg" width="100%">
+  <img alt="Tarun Tej — learning AI, algorithms and mathematics" src="assets/header-light.svg" width="100%">
 </picture>
 
 ## About me
 
-I'm an AI / ML enthusiast who likes to understand how models work under the hood, and then build things with them.
+I'm Tarun Tej, learning **AI, algorithms and mathematics** through implementation, experiments and problem solving. I work mainly with Python and C++, and build browser tools that make technical ideas easier to explore.
 
-- 🧠 Exploring **machine learning** with Python, NumPy, pandas, PyTorch and scikit-learn
-- ⚡ Practising problem solving and **DSA in C / C++**
-- 🌐 Building for the **web** with JavaScript, TypeScript, React and Node.js
-- 🌱 Learning in public: new projects land here as I build them
+- **Machine learning:** understanding model behaviour, numerical methods and reproducible experiments.
+- **Algorithms and maths:** practising problem solving, correctness arguments and complexity analysis.
+- **Systems:** exploring exact arithmetic, persistent storage and the tradeoffs behind small implementations.
 
-## Projects
+## Selected projects
 
-- **[Axiom SAT Math](https://axiom-sat.pages.dev/)**: free, open-source SAT-style math practice with original generated questions, timed sessions, worked review and progress saved on your device. Plain HTML, CSS and JavaScript ([source](https://github.com/TARUNTEjjjj/axiom-sat)).
-- **[Forge](https://forge-learning-academy.pages.dev/)**: learn Python, Git, algorithms and software engineering step by step, with a 3D learning map and hands-on coding practice. Built with React, TypeScript and Vite.
+| Project | What it explores | Explore the work |
+| --- | --- | --- |
+| **[AxiomMath](https://github.com/TARUNTEjjjj/axiom-math)** | Exact rational arithmetic and expression parsing in C++20, with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. | [Design and arithmetic reasoning](https://github.com/TARUNTEjjjj/axiom-math/blob/main/docs/engineering.md) · [Verification](https://github.com/TARUNTEjjjj/axiom-math/blob/main/docs/verification.md) |
+| **[PocketKV](https://github.com/TARUNTEjjjj/pocketkv)** | A persistent C++20 key-value store exploring append-only logs, indexing, checksums, file locking and recovery. | [Storage design and complexity](https://github.com/TARUNTEjjjj/pocketkv/blob/main/docs/engineering.md) |
+| **[Axiom SAT Math](https://github.com/TARUNTEjjjj/axiom-sat)** | Browser-based maths practice with reproducible question generation, worked solutions and recoverable local progress. | [Try the app](https://axiom-sat.pages.dev/) · [Design notes](https://github.com/TARUNTEjjjj/axiom-sat/blob/main/docs/engineering.md) |
+| **Forge** | Interactive Python, Git and algorithms learning with browser-based exercises, built with React and TypeScript. | [Try the learning map](https://forge-learning-academy.pages.dev/) |
+
+For a quick technical tour, start with AxiomMath's arithmetic bounds or PocketKV's recovery model. The linked notes explain assumptions, tests and limitations alongside the code.
 
 ## Tech stack
 
@@ -52,3 +57,4 @@ Uncomment and fill in to add contact badges:
 -->
 
 <p align="right"><sub>Cards drawn by <a href="scripts/build.py">scripts/build.py</a> and refreshed daily by GitHub Actions · logos via <a href="https://simpleicons.org">Simple Icons</a>; HTML5 logo by W3C and Git logo by Jason Long, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> · <a href="THIRD_PARTY_NOTICES.md">all credits</a></sub></p>
+
