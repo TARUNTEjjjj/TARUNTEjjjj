@@ -22,12 +22,12 @@ I'm Tarun Tej, learning **AI, algorithms and mathematics** through implementatio
 
 | Project | What it explores | Explore the work |
 | --- | --- | --- |
-| **[AxiomMath](https://github.com/TARUNTEjjjj/axiom-math)** | Exact rational arithmetic and expression parsing in C++20, with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. | [Design and arithmetic reasoning](https://github.com/TARUNTEjjjj/axiom-math/blob/main/docs/engineering.md) · [Verification](https://github.com/TARUNTEjjjj/axiom-math/blob/main/docs/verification.md) |
-| **[PocketKV](https://github.com/TARUNTEjjjj/pocketkv)** | A persistent C++20 key-value store exploring append-only logs, indexing, checksums, file locking and recovery. | [Storage design](https://github.com/TARUNTEjjjj/pocketkv/blob/main/docs/engineering.md) · [Reproducible benchmark and results](https://github.com/TARUNTEjjjj/pocketkv/blob/main/docs/benchmarks.md) |
-| **[Axiom SAT Math](https://github.com/TARUNTEjjjj/axiom-sat)** | Browser-based maths practice with reproducible question generation, worked solutions and recoverable local progress. | [Try the app](https://axiom-sat.pages.dev/) · [Design notes](https://github.com/TARUNTEjjjj/axiom-sat/blob/main/docs/engineering.md) |
+| **AxiomMath** | Exact rational arithmetic and expression parsing in C++20, with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. | Private source repository |
+| **PocketKV** | A persistent C++20 key-value store exploring append-only logs, indexing, checksums, file locking and recovery. | Private source repository |
+| **Axiom SAT Math** | Browser-based maths practice with reproducible question generation, worked solutions and recoverable local progress. | [Try the app](https://axiom-sat.pages.dev/) |
 | **Forge** | Interactive Python, Git and algorithms learning with browser-based exercises, built with React and TypeScript. | [Try the learning map](https://forge-learning-academy.pages.dev/) |
 
-For a quick technical tour, start with AxiomMath's arithmetic bounds or PocketKV's recovery model. The linked notes explain assumptions, tests and limitations alongside the code.
+My project repositories are private; the websites remain public. Explore the live projects above or visit [my portfolio](https://tarun-tej.pages.dev/).
 
 ## Tech stack
 
@@ -38,10 +38,7 @@ For a quick technical tour, start with AxiomMath's arithmetic bounds or PocketKV
 
 ## GitHub activity
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/activity-dark.svg">
-  <img alt="Tarun Tej's contributions, streaks and top languages on GitHub" src="assets/activity-light.svg" width="100%">
-</picture>
+Private contributions are included in the GitHub contribution graph below this README as anonymous activity counts. Repository names, code and individual commit details stay private. The graph is the current record of activity; the illustration below refreshes daily.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/snake-dark.svg">
