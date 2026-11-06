@@ -7,18 +7,30 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg">
-  <img alt="Tarun Tej — learning AI, algorithms and mathematics" src="assets/header-light.svg" width="100%">
+  <img alt="Tarun Tej — React, TypeScript and UI engineering; AI, algorithms and mathematics" src="assets/header-light.svg" width="100%">
 </picture>
 
 ## About me
 
-I'm Tarun Tej, learning **AI, algorithms and mathematics** through implementation, experiments and problem solving. I work mainly with Python and C++, and build browser tools that make technical ideas easier to explore.
+I'm Tarun Tej. I build browser interfaces with **React and TypeScript**, and learn **AI, algorithms and mathematics** through implementation, experiments and problem solving.
 
-- **Machine learning:** understanding model behaviour, numerical methods and reproducible experiments.
-- **Algorithms and maths:** practising problem solving, correctness arguments and complexity analysis.
-- **Systems:** exploring exact arithmetic, persistent storage and the tradeoffs behind small implementations.
+My current frontend focus is **StormSignal**: a weather workspace with interactive SVG graphics, map and imagery tools, official-warning source checks and saved offline briefings. I care about readable interfaces, keyboard interaction and explaining what the data can—and cannot—tell us.
 
-## Selected projects
+I also work with Python and C++ to explore numerical methods, exact arithmetic, algorithms and storage systems.
+
+## Featured project · StormSignal
+
+[![StormSignal weather dashboard and interactive forecast explorer](https://raw.githubusercontent.com/TARUNTEjjjj/stormsignal/main/docs/images/dashboard-desktop.jpg)](https://stormsignal-weather.pages.dev/)
+
+**React · TypeScript · SVG · Responsive UI · Offline workflows**
+
+Explore a forecast by metric, time range and individual hour; inspect the exact values behind the graph; and switch between Data saver, Full workspace and Offline only. The interface distinguishes current forecasts, official warnings, missing sources and historical copies.
+
+[Try StormSignal](https://stormsignal-weather.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/stormsignal) · [UI case study](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/ui-case-study.md) · [Verification record](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/verification.md) · [Change history](https://github.com/TARUNTEjjjj/stormsignal/commits/main/)
+
+The case study includes expected behavior and reproducible review steps. Dated verification notes distinguish observed results from untested limits.
+
+## Other projects
 
 | Project | What it explores | Explore the work |
 | --- | --- | --- |
@@ -27,18 +39,18 @@ I'm Tarun Tej, learning **AI, algorithms and mathematics** through implementatio
 | **Axiom SAT Math** | Browser-based maths practice with reproducible question generation, worked solutions and recoverable local progress. | [Try the app](https://axiom-sat.pages.dev/) |
 | **Forge** | Interactive Python, Git and algorithms learning with browser-based exercises, built with React and TypeScript. | [Try the learning map](https://forge-learning-academy.pages.dev/) |
 
-My project repositories are private; the websites remain public. Explore the live projects above or visit [my portfolio](https://tarun-tej.pages.dev/).
+StormSignal is the source-linked frontend project to review first. Explore the other live projects above or visit [my portfolio](https://tarun-tej.pages.dev/).
 
 ## Tech stack
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/stack-dark.svg">
-  <img alt="Tech stack: C, C++, Python, JavaScript, TypeScript, NumPy, pandas, PyTorch, scikit-learn, HTML5, CSS, React, Node.js, Git and GitHub" src="assets/stack-light.svg" width="100%">
+  <img alt="Tech stack: React, TypeScript, JavaScript, HTML5, CSS, Python, C++, C, NumPy, pandas, PyTorch, scikit-learn, Node.js, Git and GitHub" src="assets/stack-light.svg" width="100%">
 </picture>
 
 ## GitHub activity
 
-Private contributions are included in the GitHub contribution graph below this README as anonymous activity counts. Repository names, code and individual commit details stay private. The graph is the current record of activity; the illustration below refreshes daily.
+For reviewable work, start with [StormSignal's commits](https://github.com/TARUNTEjjjj/stormsignal/commits/main/) and [pull requests](https://github.com/TARUNTEjjjj/stormsignal/pulls?q=is%3Apr). The contribution graph records activity; code, explanations and verification provide the context behind it.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/snake-dark.svg">
@@ -54,4 +66,3 @@ Uncomment and fill in to add contact badges:
 -->
 
 <p align="right"><sub>Cards drawn by <a href="scripts/build.py">scripts/build.py</a> and refreshed daily by GitHub Actions · most logos via <a href="https://simpleicons.org">Simple Icons</a> (C++, Python and pandas: their owners' official logos); HTML5 logo by W3C and Git logo by Jason Long, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> · <a href="THIRD_PARTY_NOTICES.md">all credits</a></sub></p>
-

@@ -3,19 +3,52 @@
   "name": "Tarun Tej",
   "greeting": "Hi there, I'm",
   "typing": [
+    "React · TypeScript · UI engineering",
+    "Building StormSignal",
     "AI · algorithms · mathematics",
-    "Learning through implementation",
-    "Python · C++ · TypeScript",
-    "Code, experiments and reasoning"
+    "Learning through implementation"
   ],
   "stack": [
-    { "group": "Languages", "items": ["c", "cplusplus", "python", "javascript", "typescript"] },
-    { "group": "ML & data", "items": ["numpy", "pandas", "pytorch", "scikitlearn"] },
-    { "group": "Web", "items": ["html5", "css", "react", "nodedotjs"] },
-    { "group": "Tools", "items": ["git", "github"] }
+    {
+      "group": "Frontend",
+      "items": [
+        "react",
+        "typescript",
+        "javascript",
+        "html5",
+        "css"
+      ]
+    },
+    {
+      "group": "Languages",
+      "items": [
+        "python",
+        "cplusplus",
+        "c"
+      ]
+    },
+    {
+      "group": "ML & data",
+      "items": [
+        "numpy",
+        "pandas",
+        "pytorch",
+        "scikitlearn"
+      ]
+    },
+    {
+      "group": "Tools",
+      "items": [
+        "nodedotjs",
+        "git",
+        "github"
+      ]
+    }
   ],
   "languages": {
-    "exclude_repos": ["TARUNTEjjjj"],
+    "exclude_repos": [
+      "TARUNTEjjjj"
+    ],
     "hide": []
   }
 }
