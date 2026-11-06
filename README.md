@@ -34,8 +34,8 @@ The case study includes expected behavior and reproducible review steps. Dated v
 
 | Project | What it explores | Explore the work |
 | --- | --- | --- |
-| **AxiomMath** | Exact rational arithmetic and expression parsing in C++20, with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. | Private source repository |
-| **PocketKV** | A persistent C++20 key-value store exploring append-only logs, indexing, checksums, file locking and recovery. | Private source repository |
+| **AxiomMath** | Exact rational arithmetic and expression parsing in C++20, with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. | [Source & tests](https://github.com/TARUNTEjjjj/axiom-math) |
+| **PocketKV** | A persistent C++20 key-value store exploring append-only logs, indexing, checksums, file locking and recovery. | [Source & tests](https://github.com/TARUNTEjjjj/pocketkv) |
 | **Axiom SAT Math** | Browser-based maths practice with reproducible question generation, worked solutions and recoverable local progress. | [Try the app](https://axiom-sat.pages.dev/) |
 | **Forge** | Interactive Python, Git and algorithms learning with browser-based exercises, built with React and TypeScript. | [Try the learning map](https://forge-learning-academy.pages.dev/) |
 
