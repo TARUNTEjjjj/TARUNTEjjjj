@@ -19,6 +19,8 @@ import json
 import os
 import re
 import sys
+import tempfile
+import xml.etree.ElementTree as ET
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -95,26 +97,39 @@ def check(profile: dict) -> None:
 
 
 def write(path: Path, content: str) -> None:
-    path.write_text(content, encoding="utf-8")
-    print(f"  wrote {path.relative_to(ROOT)} ({len(content.encode()) / 1024:.1f} KB)")
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix=".profile-", delete=False) as output:
+            temporary = Path(output.name)
+            output.write(content)
+        temporary.replace(path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+    print(f"  wrote {path} ({len(content.encode()) / 1024:.1f} KB)")
 
 
 def main(argv=None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--data", type=Path, help="render the activity card from this stats snapshot")
     parser.add_argument("--today", type=date.fromisoformat, help="treat this YYYY-MM-DD as today")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "assets",
+                        help="directory for generated SVG cards (default: assets)")
+    parser.add_argument("--check", action="store_true",
+                        help="render and validate every selected card without writing files")
     args = parser.parse_args(argv)
 
     profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
     icons = load_icons()
     check(profile)
-    out = ROOT / "assets"
-    out.mkdir(exist_ok=True)
+    out = args.output_dir.resolve()
+    rendered = {}
 
     groups = stack_groups(profile, icons)
     for theme in THEMES:
-        write(out / f"header-{theme.name}.svg", cards.header(profile, theme))
-        write(out / f"stack-{theme.name}.svg", cards.stack(groups, theme))
+        rendered[f"header-{theme.name}.svg"] = cards.header(profile, theme)
+        rendered[f"stack-{theme.name}.svg"] = cards.stack(groups, theme)
 
     if args.data:
         raw = json.loads(args.data.read_text(encoding="utf-8"))
@@ -127,14 +142,24 @@ def main(argv=None) -> None:
     else:
         print("  skipped the activity card: only the GitHub workflow builds it, because its token sees "
               "public data only. Pass --data FILE to preview it.")
-        return
-    today = args.today or datetime.now(timezone.utc).date()
-    summary = stats.summarize(raw, profile, today)
-    for theme in THEMES:
-        write(out / f"activity-{theme.name}.svg", cards.activity(summary, icons["octicons"], theme))
-
-    print(f"  {summary.contributions} contributions, streak {summary.current.length} "
-          f"(best {summary.longest.length}), {len(summary.languages)} languages")
+        raw = None
+    if raw is not None:
+        today = args.today or datetime.now(timezone.utc).date()
+        summary = stats.summarize(raw, profile, today)
+        for theme in THEMES:
+            rendered[f"activity-{theme.name}.svg"] = cards.activity(summary, icons["octicons"], theme)
+        print(f"  {summary.contributions} contributions, streak {summary.current.length} "
+              f"(best {summary.longest.length}), {len(summary.languages)} languages")
+    # Validate the complete set before replacing any existing card.
+    for name, content in rendered.items():
+        if ET.fromstring(content).tag != "{http://www.w3.org/2000/svg}svg":
+            raise ValueError(f"{name}: expected an SVG document")
+    if args.check:
+        print(f"  validated {len(rendered)} SVG cards; no files written")
+    else:
+        out.mkdir(parents=True, exist_ok=True)
+        for name, content in rendered.items():
+            write(out / name, content)
 
 
 if __name__ == "__main__":

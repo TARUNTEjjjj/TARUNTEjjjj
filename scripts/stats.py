@@ -173,7 +173,8 @@ def streaks(days: dict, today: date) -> tuple[Streak, Streak]:
     Today only counts once it has a contribution, so a streak isn't shown as
     broken just because the day isn't over yet.
     """
-    active = {date.fromisoformat(d) for d, count in days.items() if count > 0}
+    active = {date.fromisoformat(d) for d, count in days.items()
+              if count > 0 and date.fromisoformat(d) <= today}
     longest, run_start, previous = Streak(), None, None
     for day in sorted(active):
         if previous is None or day - previous != timedelta(days=1):
@@ -223,7 +224,8 @@ def summarize(raw: dict, profile: dict, today: date) -> Summary:
         login=raw["login"],
         joined=_parse_time(raw["createdAt"]).date(),
         today=today,
-        contributions=sum(raw["days"].values()),
+        contributions=sum(count for day, count in raw["days"].items()
+                          if date.fromisoformat(day) <= today),
         commits=raw["commits"],
         pull_requests=raw["pullRequests"],
         issues=raw["issues"],
