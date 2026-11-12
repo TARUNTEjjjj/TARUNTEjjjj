@@ -66,3 +66,14 @@ Uncomment and fill in to add contact badges:
 -->
 
 <p align="right"><sub>Cards drawn by <a href="scripts/build.py">scripts/build.py</a> and refreshed daily by GitHub Actions · most logos via <a href="https://simpleicons.org">Simple Icons</a> (C++, Python and pandas: their owners' official logos); HTML5 logo by W3C and Git logo by Jason Long, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> · <a href="THIRD_PARTY_NOTICES.md">all credits</a></sub></p>
+
+### Preview and validate cards locally
+
+Run `python3 scripts/build.py --check` to render and validate the banner and
+stack without changing files. Use `--output-dir /path/to/preview` for a separate
+preview directory, and `--data snapshot.json --today YYYY-MM-DD` to include
+activity cards without network access. The chosen day bounds contribution
+calendar totals and streaks; other aggregate counts retain the snapshot values.
+All cards are rendered and checked as SVG before any are written, and individual
+files are replaced atomically. `python3 -m unittest discover -s tests -v` exercises
+these offline paths; pull requests run the same checks without a write token.
