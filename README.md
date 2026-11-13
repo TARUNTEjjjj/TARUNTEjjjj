@@ -20,16 +20,6 @@ I'm interested in **web development, software engineering, AI evaluation and ent
 
 [Visit my portfolio](https://tarun-tej.pages.dev/) · [Browse my repositories](https://github.com/TARUNTEjjjj?tab=repositories)
 
-## AI evaluation experience
-
-**AI Response Evaluation · Outlier and Mercor**
-
-*May 2026–present*
-
-- Evaluate AI responses against rubrics covering correctness, reasoning, relevance, clarity and instruction-following.
-- Evaluate AI-generated code using project-specific rubrics, compare outputs and provide structured written feedback.
-- **222 total hours logged on Outlier** as of November 2026.
-
 ## What I'm building
 
 | Area | Project | Work to explore |
