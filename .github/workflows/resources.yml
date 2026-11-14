@@ -39,7 +39,14 @@ jobs:
       - name: Refresh public GitHub metadata
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/resources/resource-server.mjs refresh --config resources/sources.json --output resources/catalog.json
+        run: |
+          status=0
+          node scripts/resources/resource-server.mjs refresh --config resources/sources.json --output resources/catalog.json || status=$?
+          if [ "$status" -eq 2 ]; then
+            echo '::warning::Some sources could not refresh; publishing validated last-good data and freshness status.'
+          elif [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
       - run: node scripts/resources/check-catalog.mjs
       - name: Commit the catalog snapshot
         run: |

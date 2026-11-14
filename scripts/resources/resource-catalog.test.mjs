@@ -4,6 +4,7 @@ import { mkdtemp, readFile, writeFile, rm, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { request as httpRequest } from 'node:http';
+import { spawnSync } from 'node:child_process';
 import { validateConfig, normalizeRepository, rankResources, createSeedSnapshot, refreshCatalog, readCatalog, queryCatalog } from './resource-catalog.mjs';
 import { createResourceServer } from './resource-server.mjs';
 
@@ -148,6 +149,22 @@ test('source failure preserves its last good data and original timestamp', async
   assert.match(snapshot.errors[0].message, /503/);
 });
 
+test('refresh CLI persists a partial catalog and returns the distinct partial-success exit code', async (t) => {
+  const { snapshotPath, directory } = await fixture(t);
+  const queryOnly = { ...config, categories: [{ ...config.categories[0], seeds: [] }] };
+  const configPath = join(directory, 'sources.json');
+  await writeFile(configPath, JSON.stringify(queryOnly));
+  await refreshCatalog(queryOnly, options({ snapshotPath, fetchImpl: successfulFetch }));
+  const bootstrap = "globalThis.fetch = async () => new Response('', {status: 503}); const {main} = await import(process.argv[1]); await main(process.argv.slice(2));";
+  const result = spawnSync(process.execPath, ['--input-type=module', '--eval', bootstrap, new URL('./resource-server.mjs', import.meta.url).href, 'refresh', '--config', configPath, '--output', snapshotPath], { encoding: 'utf8', timeout: 5000 });
+  assert.equal(result.status, 2, result.stderr);
+  const snapshot = JSON.parse(await readFile(snapshotPath, 'utf8'));
+  assert.equal(snapshot.status, 'partial');
+  assert.equal(snapshot.items[0].stars, 10000);
+  assert.equal(snapshot.items[0].fetchedAt, NOW);
+  assert.equal(snapshot.errors.length, 1);
+});
+
 test('rate limits stop further requests and persist cooldown across refreshes', async (t) => {
   const { snapshotPath } = await fixture(t);
   let calls = 0;
@@ -159,6 +176,33 @@ test('rate limits stop further requests and persist cooldown across refreshes', 
   assert.equal(calls, 1);
   await refreshCatalog(config, options({ snapshotPath, fetchImpl: successfulFetch, now: '2026-11-14T00:03:00.000Z' }));
   assert.equal((await readCatalog(config, { snapshotPath, now: '2026-11-14T00:03:00.000Z' })).status, 'cached');
+});
+
+test('Retry-After starts when the rate-limit response arrives, not when refresh began', async (t) => {
+  const { snapshotPath } = await fixture(t);
+  let clock = Date.parse(NOW);
+  let calls = 0;
+  const fetchImpl = async (url) => {
+    calls++;
+    if (url.includes('/search/')) return searchResponse([raw()]);
+    clock += 120_000;
+    return new Response('', { status: 429, headers: { 'Retry-After': '60' } });
+  };
+  await refreshCatalog(config, options({ snapshotPath, now: () => clock, fetchImpl }));
+  const cache = JSON.parse(await readFile(`${snapshotPath}.cache.json`, 'utf8'));
+  const limited = Object.values(cache.sourceCache).find((source) => source.nextRetryAt);
+  assert.equal(Date.parse(limited.nextRetryAt) - clock, 60_000);
+  clock += 30_000;
+  await refreshCatalog(config, options({ snapshotPath, now: () => clock, fetchImpl }));
+  assert.equal(calls, 2, 'A second refresh during the cooldown must not make upstream requests.');
+});
+
+test('repository timestamps record successful response observations', async (t) => {
+  const { snapshotPath } = await fixture(t);
+  let clock = Date.parse(NOW);
+  const snapshot = await refreshCatalog(config, options({ snapshotPath, now: () => clock, fetchImpl: async (url) => { clock += 30_000; return successfulFetch(url); } }));
+  assert.equal(snapshot.attemptedAt, NOW);
+  assert.equal(snapshot.items[0].fetchedAt, new Date(clock).toISOString());
 });
 
 test('excluded archived seeds stay excluded, while relevant low-star seeds are permitted', async (t) => {
@@ -173,6 +217,28 @@ test('excluded archived seeds stay excluded, while relevant low-star seeds are p
   assert.equal(offline.items.length, 0);
   const active = await refreshCatalog(seedOnly, options({ snapshotPath, fetchImpl: async () => jsonResponse(raw({ stargazers_count: 3 })) }));
   assert.equal(active.items[0].stars, 3);
+});
+
+test('a known-archived seed is removed from failed discovery sources too', async (t) => {
+  const { snapshotPath } = await fixture(t);
+  await refreshCatalog(config, options({ snapshotPath, fetchImpl: successfulFetch }));
+  const snapshot = await refreshCatalog(config, options({ snapshotPath, now: LATER, fetchImpl: async (url) => url.includes('/search/') ? new Response('', { status: 503 }) : jsonResponse(raw({ archived: true })) }));
+  assert.equal(snapshot.items.length, 0);
+  assert.equal(snapshot.excludedSeeds[0].repositoryId, 123);
+  await rm(`${snapshotPath}.cache.json`);
+  assert.equal((await readCatalog(config, { snapshotPath, now: LATER })).items.length, 0);
+  const offline = await refreshCatalog(config, options({ snapshotPath, now: LATER, fetchImpl: async () => { throw new Error('offline'); } }));
+  assert.equal(offline.items.length, 0);
+});
+
+test('known exclusions match repository IDs after a seed has been renamed', async (t) => {
+  const { snapshotPath } = await fixture(t);
+  const renamed = raw({ full_name: 'symbolic/sympy', html_url: 'https://github.com/symbolic/sympy' });
+  await refreshCatalog(config, options({ snapshotPath, fetchImpl: async (url) => url.includes('/search/') ? searchResponse([renamed]) : jsonResponse(renamed) }));
+  const snapshot = await refreshCatalog(config, options({ snapshotPath, now: LATER, fetchImpl: async (url) => url.includes('/search/') ? new Response('', { status: 503 }) : jsonResponse({ ...renamed, archived: true }) }));
+  assert.equal(snapshot.items.length, 0);
+  assert.equal(snapshot.excludedSeeds[0].fullName, 'sympy/sympy');
+  assert.equal(snapshot.excludedSeeds[0].repositoryId, 123);
 });
 
 test('incomplete search preserves previous entries instead of dropping them', async (t) => {

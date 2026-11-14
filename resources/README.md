@@ -27,7 +27,7 @@ The refresh job uses rate-limit cooldowns and conditional requests when its loca
 
 ## Automated updates
 
-`.github/workflows/resources.yml` tests changes and, after it reaches the default branch, refreshes once daily or through **Run workflow**. A successful refresh commits only the public snapshot (and the native bundle copy in Forge for Mac). Failed refreshes stop before committing; branch protections can also prevent the bot push. The workflow has read-only permissions for tests and grants content-write permission only to the refresh job.
+`.github/workflows/resources.yml` tests changes and, after it reaches the default branch, refreshes once daily or through **Run workflow**. A usable validated refresh commits only the public snapshot (and the native bundle copy in Forge for Mac). Partial refreshes publish validated last-good entries with stale/error information and a workflow warning. Fatal refresh or validation errors stop before committing; branch protections can also prevent the bot push. The workflow has read-only permissions for tests and grants content-write permission only to the refresh job.
 
 A catalog update in GitHub does not by itself publish every hosted app: use that repository's existing deployment procedure. Static sites consume the checked-in snapshot during their build, while the optional API reads the on-disk snapshot. No GitHub credential goes into a browser build.
 

@@ -111,14 +111,18 @@ function seedItems(config, sourceCache = {}) {
 
 function assemble(config, sourceCache, { now, errors = [], attemptedAt = null, forceStatus } = {}) {
   const time = Date.parse(instant(now));
+  const excludedSeeds = Object.values(sourceCache).filter((source) => source.kind === 'seed' && source.excluded).map((source) => ({ category: source.category, fullName: source.query.slice(5), ...(source.excludedId ? { repositoryId: source.excludedId } : {}) }));
   const cached = Object.values(sourceCache).flatMap((source) => source.items.map((item) => ({ ...item, stale: source.stale || time - Date.parse(item.fetchedAt) > config.ttlHours * 3_600_000 })));
-  const all = [...cached, ...seedItems(config, sourceCache)];
+  const all = [...cached, ...seedItems(config, sourceCache)].filter((item) => !isExcluded(item, excludedSeeds));
   const items = config.categories.flatMap((category) => rankResources(all.filter((item) => item.category === category.id), category, { now, limit: config.maxPerCategory }));
   const times = cached.map((item) => item.fetchedAt).filter(Boolean).sort();
   const anyVerified = cached.length > 0;
   const status = forceStatus ?? (!anyVerified ? 'seed' : errors.length || cached.some((item) => item.stale) ? 'partial' : 'live');
-  const excludedSeeds = Object.values(sourceCache).filter((source) => source.kind === 'seed' && source.excluded).map((source) => ({ category: source.category, fullName: source.query.slice(5) }));
   return { schemaVersion: 1, project: config.project, title: config.title, fetchedAt: times.at(-1) ?? null, attemptedAt, status, errors, excludedSeeds, categories: config.categories.map(({ id, title }) => ({ id, title, count: items.filter((item) => item.category === id).length })), items };
+}
+
+function isExcluded(item, exclusions) {
+  return exclusions.some((excluded) => excluded.category === item.category && (excluded.repositoryId === item.id || excluded.fullName.toLowerCase() === item.fullName.toLowerCase()));
 }
 
 export function createSeedSnapshot(input, { now } = {}) {
@@ -161,7 +165,7 @@ async function loadStore(path, config) {
       const items = entry.items.map((item) => restoreItem(item, config, source)).filter(Boolean);
       if (entry.items.length && !items.length) continue;
       const pages = Array.isArray(entry.pages) ? entry.pages.filter((page) => page && isSafeApiUrl(page.url, source.kind) && Array.isArray(page.items) && page.items.length <= 100).slice(0, 2).map((page) => ({ url: page.url, etag: typeof page.etag === 'string' ? page.etag.slice(0, 500) : null, items: page.items.map((item) => restoreItem(item, config, source)).filter(Boolean), next: isSafeApiUrl(page.next, source.kind) ? page.next : null, incomplete: !!page.incomplete })) : [];
-      sourceCache[source.key] = { ...source, items, pages, fetchedAt: isoDate(entry.fetchedAt), stale: !!entry.stale, excluded: source.kind === 'seed' && !!entry.excluded, nextRetryAt: isoDate(entry.nextRetryAt) };
+      sourceCache[source.key] = { ...source, items, pages, fetchedAt: isoDate(entry.fetchedAt), stale: !!entry.stale, excluded: source.kind === 'seed' && !!entry.excluded, excludedId: positiveInteger(entry.excludedId), nextRetryAt: isoDate(entry.nextRetryAt) };
     }
     return { sourceCache, attemptedAt: isoDate(parsed.attemptedAt), errors: Array.isArray(parsed.errors) ? parsed.errors.slice(0, 160).map((error) => ({ source: boundedText(error?.source, 300), message: boundedText(error?.message, 200) })) : [] };
   } catch (error) {
@@ -178,8 +182,8 @@ async function storeFromPublic(path, config) {
   const sourceCache = {};
   for (const source of sourcesFor(config)) {
     const items = publicSnapshot.items.filter((item) => item.provenance === 'github' && item.category === source.category && item.sourceQuery === source.query);
-    const excluded = source.kind === 'seed' && publicSnapshot.excludedSeeds.some((entry) => entry.category === source.category && `repo:${entry.fullName}` === source.query);
-    if (items.length || excluded) sourceCache[source.key] = { ...source, items, pages: [], fetchedAt: items.map((item) => item.fetchedAt).sort().at(-1) ?? null, stale: items.some((item) => item.stale), excluded, nextRetryAt: null };
+    const excludedSeed = source.kind === 'seed' ? publicSnapshot.excludedSeeds.find((entry) => entry.category === source.category && `repo:${entry.fullName}` === source.query) : null;
+    if (items.length || excludedSeed) sourceCache[source.key] = { ...source, items, pages: [], fetchedAt: items.map((item) => item.fetchedAt).sort().at(-1) ?? null, stale: items.some((item) => item.stale), excluded: !!excludedSeed, excludedId: excludedSeed?.repositoryId ?? null, nextRetryAt: null };
   }
   return { sourceCache, attemptedAt: publicSnapshot.attemptedAt, errors: publicSnapshot.errors };
 }
@@ -203,12 +207,12 @@ async function loadPublicSnapshot(path, config) {
     if (!parsed || typeof parsed !== 'object' || parsed.schemaVersion !== 1 || parsed.project !== config.project || !Array.isArray(parsed.items) || parsed.items.length > 1000) return null;
     const validSeeds = seedItems(config);
     const sources = sourcesFor(config);
+    const excludedSeeds = Array.isArray(parsed.excludedSeeds) ? parsed.excludedSeeds.filter((entry) => validSeeds.some((seed) => seed.fullName === entry?.fullName && seed.category === entry?.category)).map(({ category, fullName, repositoryId }) => ({ category, fullName, ...(positiveInteger(repositoryId) ? { repositoryId } : {}) })) : [];
     const items = parsed.items.map((item) => {
       if (item?.provenance === 'seed') return validSeeds.find((seed) => seed.fullName === item.fullName && seed.category === item.category);
       const source = sources.find((entry) => entry.category === item?.category && entry.query === item?.sourceQuery);
       return source ? restoreItem(item, config, source) : null;
-    }).filter(Boolean);
-    const excludedSeeds = Array.isArray(parsed.excludedSeeds) ? parsed.excludedSeeds.filter((entry) => validSeeds.some((seed) => seed.fullName === entry?.fullName && seed.category === entry?.category)).map(({ category, fullName }) => ({ category, fullName })) : [];
+    }).filter((item) => item && !isExcluded(item, excludedSeeds));
     const errors = Array.isArray(parsed.errors) ? parsed.errors.slice(0, 160).map((error) => ({ source: boundedText(error?.source, 300), message: boundedText(error?.message, 200) })) : [];
     return { items, errors, excludedSeeds, attemptedAt: isoDate(parsed.attemptedAt), status: parsed.status };
   } catch (error) { if (error.code === 'ENOENT' || error instanceof SyntaxError) return null; throw error; }
@@ -318,7 +322,7 @@ async function performRefresh(config, { snapshotPath, token = process.env.GITHUB
     const old = previous?.sourceCache[source.key];
     const fail = (message, nextRetryAt = null) => {
       errors.push({ source: `${source.category}: ${source.query}`, message });
-      sourceCache[source.key] = { ...source, items: old?.items ?? [], pages: old?.pages ?? [], fetchedAt: old?.fetchedAt ?? null, stale: true, excluded: old?.excluded ?? false, nextRetryAt };
+      sourceCache[source.key] = { ...source, items: old?.items ?? [], pages: old?.pages ?? [], fetchedAt: old?.fetchedAt ?? null, stale: true, excluded: old?.excluded ?? false, excludedId: old?.excludedId ?? null, nextRetryAt };
     };
     if (globalCooldown) { fail('GitHub refresh deferred until the recorded rate-limit cooldown ends.', globalCooldown); continue; }
     let url = source.url;
@@ -327,19 +331,23 @@ async function performRefresh(config, { snapshotPath, token = process.env.GITHUB
     let incomplete = false;
     let failure = null;
     let cooldown = null;
+    let observedAt = attemptedAt;
+    let excludedId = null;
     for (let pageIndex = 0; url && pageIndex < (source.kind === 'query' ? config.maxPages : 1); pageIndex++) {
       if (!isSafeApiUrl(url, source.kind)) { failure = 'Rejected an unexpected GitHub pagination URL.'; break; }
       const oldPage = old?.pages.find((page) => page.url === url);
       try {
         if (requestCount++ > 0 && spacing > 0) await sleepImpl(spacing);
         const { response, body } = await fetchPage(url, { fetchImpl, token, etag: oldPage?.etag, timeoutMs, kind: source.kind });
+        observedAt = instant(now);
         if (response.status === 403 || response.status === 429) {
-          cooldown = retryAt(response, at); globalCooldown = cooldown;
+          cooldown = retryAt(response, Date.parse(observedAt)); globalCooldown = cooldown;
           failure = `GitHub returned ${response.status}; refresh paused to respect its rate limit or access policy.`; break;
         }
         if (response.status === 304) {
           if (!oldPage) { failure = 'GitHub returned an unusable cache response.'; break; }
-          const revalidated = oldPage.items.map((item) => ({ ...item, fetchedAt: attemptedAt, stale: false }));
+          const revalidated = oldPage.items.map((item) => ({ ...item, fetchedAt: observedAt, stale: false }));
+          if (source.kind === 'seed' && !revalidated.length) excludedId = old?.excludedId ?? null;
           pages.push({ ...oldPage, items: revalidated }); items.push(...revalidated);
           incomplete ||= oldPage.incomplete;
           url = oldPage.next; continue;
@@ -348,7 +356,8 @@ async function performRefresh(config, { snapshotPath, token = process.env.GITHUB
         const rawItems = source.kind === 'query' ? body?.items : [body];
         if (!Array.isArray(rawItems) || rawItems.length > 100 || (source.kind === 'query' && typeof body.incomplete_results !== 'boolean')) { failure = 'GitHub returned an invalid repository payload.'; break; }
         if (rawItems.some((repo) => !repo || !Number.isSafeInteger(repo.id) || repo.id < 1 || !repositoryUrl(repo) || positiveInteger(repo.stargazers_count) === null)) { failure = 'GitHub returned malformed repository metadata; the previous source data was preserved.'; break; }
-        const normalized = rawItems.map((repo) => normalizeRepository(repo, { category: source.category, sourceQuery: source.query, fetchedAt: attemptedAt, minStars: source.kind === 'seed' ? 0 : config.minStars })).filter(Boolean);
+        const normalized = rawItems.map((repo) => normalizeRepository(repo, { category: source.category, sourceQuery: source.query, fetchedAt: observedAt, minStars: source.kind === 'seed' ? 0 : config.minStars })).filter(Boolean);
+        if (source.kind === 'seed' && !normalized.length) excludedId = rawItems[0].id;
         const link = response.headers.get('link') ?? '';
         const next = link.match(/<([^>]+)>;\s*rel="next"/)?.[1] ?? null;
         if (next && !isSafeApiUrl(next, source.kind)) { failure = 'Rejected an unexpected GitHub pagination URL.'; break; }
@@ -363,7 +372,7 @@ async function performRefresh(config, { snapshotPath, token = process.env.GITHUB
       const seen = new Set(items.map((item) => item.id));
       items.push(...(old?.items ?? []).filter((item) => !seen.has(item.id)).map((item) => ({ ...item, stale: true })));
     }
-    sourceCache[source.key] = { ...source, items: items.slice(0, 300), pages, fetchedAt: attemptedAt, stale: incomplete, excluded: source.kind === 'seed' && !items.length, nextRetryAt: null };
+    sourceCache[source.key] = { ...source, items: items.slice(0, 300), pages, fetchedAt: observedAt, stale: incomplete, excluded: source.kind === 'seed' && !items.length, excludedId, nextRetryAt: null };
   }
   const snapshot = assemble(config, sourceCache, { now, errors, attemptedAt });
   await writeSnapshot(snapshotPath ? `${snapshotPath}.cache.json` : null, { schemaVersion: 1, project: config.project, attemptedAt, errors, sourceCache });
