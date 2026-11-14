@@ -9,7 +9,7 @@
       "id": "programming",
       "title": "Programming foundations",
       "queries": [
-        "topic:learn-to-code"
+        "topic:computer-science topic:curriculum"
       ],
       "seeds": [
         "freeCodeCamp/freeCodeCamp",
@@ -21,7 +21,7 @@
       "id": "foundations",
       "title": "Neural network foundations",
       "queries": [
-        "topic:neural-network"
+        "topic:neural-network topic:from-scratch"
       ],
       "seeds": [
         "karpathy/micrograd",

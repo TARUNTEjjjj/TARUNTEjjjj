@@ -33,7 +33,7 @@ A catalog update in GitHub does not by itself publish every hosted app: use that
 
 ## Source policy
 
-- **Programming foundations**: [freeCodeCamp/freeCodeCamp](https://github.com/freeCodeCamp/freeCodeCamp), [TheAlgorithms/Python](https://github.com/TheAlgorithms/Python), [ossu/computer-science](https://github.com/ossu/computer-science). Discovery: `topic:learn-to-code`.
-- **Neural network foundations**: [karpathy/micrograd](https://github.com/karpathy/micrograd), [d2l-ai/d2l-en](https://github.com/d2l-ai/d2l-en). Discovery: `topic:neural-network`.
+- **Programming foundations**: [freeCodeCamp/freeCodeCamp](https://github.com/freeCodeCamp/freeCodeCamp), [TheAlgorithms/Python](https://github.com/TheAlgorithms/Python), [ossu/computer-science](https://github.com/ossu/computer-science). Discovery: `topic:computer-science topic:curriculum`.
+- **Neural network foundations**: [karpathy/micrograd](https://github.com/karpathy/micrograd), [d2l-ai/d2l-en](https://github.com/d2l-ai/d2l-en). Discovery: `topic:neural-network topic:from-scratch`.
 
 Implementation follows the official [GitHub search API](https://docs.github.com/en/rest/search/search), [repository search syntax](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories), and [API best practices](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api).
