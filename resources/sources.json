@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "project": "TARUNTEjjjj",
+  "title": "Tarun\u2019s learning resource index",
+  "minStars": 500,
+  "maxPerCategory": 12,
+  "categories": [
+    {
+      "id": "programming",
+      "title": "Programming foundations",
+      "queries": [
+        "topic:learn-to-code"
+      ],
+      "seeds": [
+        "freeCodeCamp/freeCodeCamp",
+        "TheAlgorithms/Python",
+        "ossu/computer-science"
+      ]
+    },
+    {
+      "id": "foundations",
+      "title": "Neural network foundations",
+      "queries": [
+        "topic:neural-network"
+      ],
+      "seeds": [
+        "karpathy/micrograd",
+        "d2l-ai/d2l-en"
+      ]
+    }
+  ]
+}

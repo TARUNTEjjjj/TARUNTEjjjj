@@ -76,3 +76,7 @@ files are replaced atomically. `python3 -m unittest discover -s tests -v` exerci
 these offline paths; pull requests run the same checks without a write token.
 
 </details>
+
+## GitHub resource collection
+
+Explore the project-specific [resource catalog](resources/README.md): curated references, star-ranked discovery, dated source metadata, cached failure recovery and an optional read-only server API. The repository includes a daily refresh workflow; hosted sites still follow their existing deployment process.

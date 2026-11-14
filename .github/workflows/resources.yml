@@ -1,0 +1,51 @@
+name: Resource catalog
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '49 3 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: resource-catalog-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/resources/resource-catalog.test.mjs
+      - name: Check committed catalog
+        run: node scripts/resources/check-catalog.mjs
+  refresh:
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Refresh public GitHub metadata
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/resources/resource-server.mjs refresh --config resources/sources.json --output resources/catalog.json
+      - run: node scripts/resources/check-catalog.mjs
+      - name: Commit the catalog snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add resources/catalog.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Refresh public resource catalog'
+          git push
