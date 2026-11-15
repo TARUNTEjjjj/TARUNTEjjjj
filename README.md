@@ -1,8 +1,8 @@
 <!--
   The images below are generated: edit profile.json (banner text, tech stack) and the
   "Build profile" workflow redraws them. `python3 scripts/build.py` redraws the banner and
-  stack locally; only the workflow draws the activity card, because its token sees public
-  data only.
+  stack locally. The activity card is not shown here, so the workflow no longer draws it;
+  scripts/build.py explains how to preview it or bring it back.
 -->
 
 <picture>
@@ -68,8 +68,11 @@ For reviewable work, start with [StormSignal's commits](https://github.com/TARUN
 
 Run `python3 scripts/build.py --check` to render and validate the banner and
 stack without changing files. Use `--output-dir /path/to/preview` for a separate
-preview directory, and `--data snapshot.json --today YYYY-MM-DD` to include
-activity cards without network access. The chosen day bounds contribution
+preview directory, and `--data scripts/sample-stats.json` to include activity
+cards without network access; that sample shows the snapshot format. A `--data`
+preview goes to `preview/`, which git ignores, unless `--output-dir` names
+another directory, and never into `assets/`. `--today YYYY-MM-DD` chooses the
+day, by default the snapshot's last one. The chosen day bounds contribution
 calendar totals and streaks; other aggregate counts retain the snapshot values.
 All cards are rendered and checked as SVG before any are written, and individual
 files are replaced atomically. `python3 -m unittest discover -s tests -v` exercises

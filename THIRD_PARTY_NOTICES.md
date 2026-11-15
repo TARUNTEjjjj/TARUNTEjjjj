@@ -163,7 +163,7 @@ DAMAGE.
 
 ## Octicons (activity card)
 
-The small icons on the activity card are [GitHub Octicons](https://primer.style/octicons) 19.42.0:
+The activity card's small icons are [GitHub Octicons](https://primer.style/octicons) 19.42.0. The profile doesn't show that card at the moment, but the icons stay in `scripts/icons.json`:
 
 ```
 MIT License

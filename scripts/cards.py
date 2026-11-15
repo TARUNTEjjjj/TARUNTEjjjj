@@ -1,4 +1,4 @@
-"""The three profile cards: animated header, tech stack and GitHub activity.
+"""The profile cards: animated header, tech stack and GitHub activity (off by default, see build.py).
 
 Every function returns a complete, self-contained SVG document for one theme.
 Animations are CSS + SMIL only, which GitHub renders inside <img> tags.
@@ -222,7 +222,7 @@ def _pill(x: float, y: float, brand: Brand, t: Theme) -> str:
             margin = 7
             scale = (TILE - 2 * margin) / 24  # Simple Icons are drawn on a 24px grid
             glyph = (f'<path transform="translate({num(TILE_INSET + margin)} {num(TILE_INSET + margin)}) '
-                     f'scale({num(scale)})" fill="{glyph_color}" d="{brand.path}"/>')
+                     f'scale({num(scale)})" fill="{glyph_color}" d="{esc(brand.path)}"/>')
         else:
             fill = t.violet
             glyph = (f'<text x="{num(TILE_INSET + TILE / 2)}" y="{num(TILE_INSET + TILE / 2 + 7)}" '
@@ -280,6 +280,10 @@ def stack(groups: list, t: Theme) -> str:
 
 # ------------------------------------------------------------------- activity
 
+# Shown when the contribution calendar includes private contributions (see activity()).
+PRIVATE_NOTE = "private contributions count toward the total and streaks"
+
+
 def _count(n: int) -> str:
     if n >= 10_000:
         return f"{n / 1000:.1f}".rstrip("0").rstrip(".") + "k"
@@ -305,7 +309,7 @@ def _span(streak: Streak, today, empty: str) -> str:
 
 def _icon(paths: list, x: float, y: float, color: str, size: float = 16) -> str:
     scale = f" scale({num(size / 16)})" if size != 16 else ""
-    inner = "".join(f'<path d="{d}"/>' for d in paths)
+    inner = "".join(f'<path d="{esc(d)}"/>' for d in paths)
     return f'<g transform="translate({num(x)} {num(y)}){scale}" fill="{color}">{inner}</g>'
 
 
@@ -331,9 +335,16 @@ def activity(s: Summary, octicons: dict, t: Theme) -> str:
     def days(n: int) -> str:
         return "day" if n == 1 else "days"
 
+    # The calendar behind the total and both streaks counts private contributions when the profile
+    # shows them, unlike the public-only numbers below. Say how many under the total (at most 23
+    # characters below a million), and above all three that the streaks count them too.
+    total_note = f"{s.joined:%b %Y} – present"
+    if s.private_contributions:
+        total_note = f"{_count(s.private_contributions)} in private repos"
+        parts.append(f'<text x="{split - 40}" y="52" text-anchor="end" class="mono" font-size="14" '
+                     f'fill="{t.faint}">{PRIVATE_NOTE}</text>')
     heroes = (
-        ("graph", t.cyan, "Total contributions", _count(s.contributions), "",
-         f"{s.joined:%b %Y} – present"),
+        ("graph", t.cyan, "Total contributions", _count(s.contributions), "", total_note),
         ("flame", t.pink, "Current streak", _count(s.current.length), days(s.current.length),
          _span(s.current, s.today, "no active streak")),
         ("trophy", t.violet, "Longest streak", _count(s.longest.length), days(s.longest.length),
@@ -392,18 +403,24 @@ def activity(s: Summary, octicons: dict, t: Theme) -> str:
                          f'<text x="{cx + 196}" y="{y}" text-anchor="end" class="mono" font-size="15" '
                          f'fill="{t.muted}">{pct}</text>')
     else:
+        # Repos above still counts repos that profile.json leaves out here, so say when that's why it's empty.
+        headline, note = (("No languages to show", "All public code is excluded in profile.json.")
+                          if s.languages_excluded else
+                          ("No public code yet", "Languages from public repos will show up here."))
         parts.append(f'<rect x="{lang_x}" y="72" width="{bar_w}" height="10" rx="5" fill="{t.panel}" stroke="{t.border}"/>'
-                     f'<text x="{lang_x}" y="128" class="sans" font-size="17" fill="{t.text}">No public code yet</text>'
-                     f'<text x="{lang_x}" y="154" class="sans" font-size="15" fill="{t.muted}">'
-                     "Languages from public repos will show up here.</text>")
+                     f'<text x="{lang_x}" y="128" class="sans" font-size="17" fill="{t.text}">{headline}</text>'
+                     f'<text x="{lang_x}" y="154" class="sans" font-size="15" fill="{t.muted}">{note}</text>')
 
     parts.append(f'<text x="{left}" y="300" class="mono" font-size="14" fill="{t.faint}">'
                  f"@{esc(s.login)} · on GitHub since {s.joined:%b %Y}</text>"
                  f'<text x="{right}" y="300" text-anchor="end" class="mono" font-size="14" fill="{t.faint}">'
                  f"updated {s.today.day} {s.today:%b %Y}</text>")
 
-    title = (f"{s.login} on GitHub: {s.contributions:,} contributions, current streak {s.current.length} "
+    private = f" ({s.private_contributions:,} in private repositories)" if s.private_contributions else ""
+    title = (f"{s.login} on GitHub: {s.contributions:,} contributions{private}, current streak {s.current.length} "
              f"{days(s.current.length)}, longest streak {s.longest.length} {days(s.longest.length)}")
+    if s.private_contributions:
+        title += f"; {PRIVATE_NOTE}"
     body = (f'<rect x=".5" y=".5" width="{WIDTH - 1}" height="{height - 1}" rx="16" fill="{t.bg}" stroke="{t.border}"/>'
             + "".join(parts))
     return document(WIDTH, height, title, body)
