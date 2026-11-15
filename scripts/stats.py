@@ -1,4 +1,9 @@
-"""Fetch a user's public GitHub numbers and boil them down to what the activity card shows."""
+"""Fetch a user's public GitHub numbers and boil them down to what the activity card shows.
+
+Repositories, languages, stars, commits, pull requests and issues are public only. The total
+and the streaks come from the contribution calendar, which also counts private contributions,
+anonymously, when the profile is set to show them; fetch reports how many, and the card says so.
+"""
 
 from __future__ import annotations
 
@@ -30,7 +35,8 @@ query($login: String!, $cursor: String, $prSearch: String!, $issueSearch: String
       nodes {
         name
         stargazerCount
-        languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+        languages(first: 100, orderBy: {field: SIZE, direction: DESC}) {
+          pageInfo { hasNextPage endCursor }
           edges { size node { name color } }
         }
       }
@@ -39,10 +45,26 @@ query($login: String!, $cursor: String, $prSearch: String!, $issueSearch: String
 }
 """
 
+# The rest of one repository's languages, when it has more than USER_QUERY's first page:
+# shares are worked out from every language's bytes, so none may be cut off.
+LANGUAGES_QUERY = """
+query($owner: String!, $name: String!, $cursor: String) {
+  repository(owner: $owner, name: $name) {
+    languages(first: 100, after: $cursor, orderBy: {field: SIZE, direction: DESC}) {
+      pageInfo { hasNextPage endCursor }
+      edges { size node { name color } }
+    }
+  }
+}
+"""
+
 # contributionsCollection spans at most one year, so ask for each year since joining.
+# When the profile is set to show private contributions, the calendar counts them too
+# (anonymously); restrictedContributionsCount says how many of its contributions those are.
 YEAR_FIELDS = """
     y{year}: contributionsCollection(from: "{start}", to: "{end}") {{
       totalCommitContributions
+      restrictedContributionsCount
       contributionCalendar {{ weeks {{ contributionDays {{ date contributionCount }} }} }}
     }}"""
 
@@ -74,8 +96,27 @@ def _parse_time(stamp: str) -> datetime:
     return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
 
 
+def _languages(page: dict, owner: str, name: str, token: str) -> list:
+    """Every language of one repository, starting from the page USER_QUERY returned."""
+    edges = list(page["edges"])
+    while page["pageInfo"]["hasNextPage"]:
+        variables = {"owner": owner, "name": name, "cursor": page["pageInfo"]["endCursor"]}
+        repo = _graphql(LANGUAGES_QUERY, variables, token)["repository"]
+        if repo is None:
+            raise RuntimeError(f"GitHub repository {owner}/{name} not found")
+        page = repo["languages"]
+        edges += page["edges"]
+    return [{"name": e["node"]["name"], "color": e["node"]["color"], "size": e["size"]} for e in edges]
+
+
 def fetch(login: str, token: str, now: Optional[datetime] = None) -> dict:
-    """Return the raw numbers in the same shape the --data fixtures use."""
+    """Return the raw numbers, in the shape a --data snapshot uses (scripts/sample-stats.json is one).
+
+    Keys: login, createdAt, followers, pullRequests, issues, publicRepos, commits,
+    privateContributions (how many of the days' counts are anonymous private ones; a snapshot
+    without it counts as 0), repos ([{name, stars, languages: [{name, color, size}]}])
+    and days ({"YYYY-MM-DD": count}).
+    """
     now = now or datetime.now(timezone.utc)
     variables = {
         "login": login,
@@ -92,10 +133,7 @@ def fetch(login: str, token: str, now: Optional[datetime] = None) -> dict:
         repos += [{
             "name": r["name"],
             "stars": r["stargazerCount"],
-            "languages": [
-                {"name": e["node"]["name"], "color": e["node"]["color"], "size": e["size"]}
-                for e in r["languages"]["edges"]
-            ],
+            "languages": _languages(r["languages"], user["login"], r["name"], token),
         } for r in page["nodes"]]
         if not page["pageInfo"]["hasNextPage"]:
             break
@@ -113,10 +151,11 @@ def fetch(login: str, token: str, now: Optional[datetime] = None) -> dict:
     )
     years = _graphql(f"query($login: String!) {{ user(login: $login) {{{fields}\n  }} }}", {"login": login}, token)["user"]
 
-    days, commits = {}, 0
+    days, commits, private = {}, 0, 0
     for year, (start, end) in ranges.items():
         collection = years[f"y{year}"]
         commits += collection["totalCommitContributions"]
+        private += collection["restrictedContributionsCount"]
         for week in collection["contributionCalendar"]["weeks"]:
             for day in week["contributionDays"]:
                 # Calendars are padded to whole weeks; keep only days inside this year's window.
@@ -131,6 +170,7 @@ def fetch(login: str, token: str, now: Optional[datetime] = None) -> dict:
         "issues": data["issues"]["issueCount"],
         "publicRepos": user["publicRepos"]["totalCount"],
         "commits": commits,
+        "privateContributions": private,
         "repos": repos,
         "days": dict(sorted(days.items())),
     }
@@ -165,6 +205,8 @@ class Summary:
     current: Streak
     longest: Streak
     languages: list = field(default_factory=list)
+    languages_excluded: bool = False  # there is public code, but profile.json's "languages" leaves none of it
+    private_contributions: int = 0  # how many of `contributions` are the calendar's anonymous private counts
 
 
 def streaks(days: dict, today: date) -> tuple[Streak, Streak]:
@@ -220,12 +262,14 @@ def top_languages(repos: list, exclude_repos: list, hide: list, limit: int = 6) 
 def summarize(raw: dict, profile: dict, today: date) -> Summary:
     options = profile.get("languages", {})
     current, longest = streaks(raw["days"], today)
+    languages = top_languages(raw["repos"], options.get("exclude_repos", []), options.get("hide", []))
+    contributions = sum(count for day, count in raw["days"].items()
+                        if date.fromisoformat(day) <= today)
     return Summary(
         login=raw["login"],
         joined=_parse_time(raw["createdAt"]).date(),
         today=today,
-        contributions=sum(count for day, count in raw["days"].items()
-                          if date.fromisoformat(day) <= today),
+        contributions=contributions,
         commits=raw["commits"],
         pull_requests=raw["pullRequests"],
         issues=raw["issues"],
@@ -234,5 +278,9 @@ def summarize(raw: dict, profile: dict, today: date) -> Summary:
         followers=raw["followers"],
         current=current,
         longest=longest,
-        languages=top_languages(raw["repos"], options.get("exclude_repos", []), options.get("hide", [])),
+        languages=languages,
+        languages_excluded=not languages and any(lang["size"] for repo in raw["repos"] for lang in repo["languages"]),
+        # Older snapshots don't have the key. It is one number for the whole calendar, so when
+        # `today` leaves later days out of the total, the most it can still stand for is that total.
+        private_contributions=min(raw.get("privateContributions", 0), contributions),
     )

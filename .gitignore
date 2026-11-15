@@ -1,4 +1,6 @@
 __pycache__/
+preview/
+stats.json
 
 # Private transport cache; publish only the normalized resource snapshot.
 resources/*.cache.json
