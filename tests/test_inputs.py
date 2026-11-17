@@ -186,6 +186,21 @@ class SnapshotTests(unittest.TestCase):
         self.assertIn("updated 9 Nov 2026", card)
         self.assertIn("current streak 6 days", card)
 
+    def test_duplicate_snapshot_keys_are_refused_without_writing(self):
+        sample = SAMPLE.read_text(encoding="utf-8")
+        cases = {
+            "followers": sample.rstrip()[:-1] + ', "followers": 99999}',
+            "2026-11-09": sample.replace('"days": {', '"days": {"2026-11-09": 99999,'),
+        }
+        for key, source in cases.items():
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as temporary:
+                snapshot, out = Path(temporary) / "snapshot.json", Path(temporary) / "out"
+                snapshot.write_text(source, encoding="utf-8")
+                with self.assertRaises(SystemExit) as stopped:
+                    run_build("--data", snapshot, "--output-dir", out)
+                self.assertIn(f"snapshot.json: duplicate key {key};", str(stopped.exception))
+                self.assertFalse(out.exists())
+
     def test_today_overrides_the_snapshot_day(self):
         card = self.preview("--today", "2026-10-18")
         self.assertIn("updated 18 Oct 2026", card)
