@@ -151,7 +151,7 @@ def snapshot_summary(path: Path, profile: dict, today: Optional[date]) -> stats.
             sys.exit(f"{path}: days key {key!r} is not a YYYY-MM-DD date; "
                      "scripts/sample-stats.json shows the format.")
 
-    raw = json.loads(path.read_text(encoding="utf-8"))
+    raw = load_json(path, "keep one value per snapshot field or date.")
     try:
         days = [day(key) for key in raw["days"]]
         if today is None:
