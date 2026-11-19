@@ -14,13 +14,46 @@
 
 **Web Developer · AI/ML Enthusiast · AI Code Evaluator**
 
-I'm Tarun Tej. I build web applications with **React, TypeScript and JavaScript**, and explore **machine learning, mathematics and systems** through Python and C++ projects. My work includes weather-data interfaces, reproducible neural-network experiments, exact arithmetic and learning tools.
+I'm Tarun Tej. I build web applications with **React, TypeScript and JavaScript**, and explore **machine learning, mathematics and systems** through Python and C++ projects. My work includes a weather-evidence dashboard with an interactive 3D globe, reproducible neural-network experiments, exact arithmetic and learning tools.
 
 I'm interested in **web development, software engineering, AI evaluation and entry-level AI/ML opportunities**. I care about readable interfaces, reliable behavior, reproducible tests and explaining the limits of a result.
 
 [Visit my portfolio](https://tarun-tej.pages.dev/) · [Browse my repositories](https://github.com/TARUNTEjjjj?tab=repositories)
 
-## What I'm building
+## Featured projects
+
+### StormSignal · weather with evidence
+
+[![StormSignal in Full workspace: the 3D globe shows NASA's 18 November 2026 satellite mosaic over North America, with New York City selected](https://raw.githubusercontent.com/TARUNTEjjjj/stormsignal/main/docs/images/aurora-globe-desktop.jpg)](https://stormsignal-weather.pages.dev/)
+
+A weather workspace that puts forecasts, satellite imagery, model disagreement and official warning coverage in one view, and never treats missing data as an all-clear.
+
+**React 19 · TypeScript · three.js / WebGL 2 · Cloudflare Pages Worker · Leaflet · NASA GIBS**
+
+- **Interactive 3D globe:** NASA's newest finished daily satellite mosaic, with its date and coverage stated, day and night drawn from the sun's position, and active official warning outlines. It works fully by keyboard, and three.js loads only in Full workspace on browsers with WebGL 2.
+- **Official warnings with their limits shown:** the US National Weather Service, read straight from the browser, plus PAGASA (Philippines), BMKG (Indonesia), IMD's Kolkata district nowcast, India's regional SACHET feeds and participating WMO authorities through the project's own Cloudflare Worker gateway. An unreachable source is reported as unavailable.
+- **Three modes for weak connections:** Data saver (default; no 3D or background polling), Full workspace (globe, maps and reports) and Offline only (dated saved briefings and a self-contained field kit).
+- **Interactive forecast explorer:** inspect any hour by pointer or keyboard, read the exact values, compare two models and export CSV.
+- **Engineering record:** 708 application tests, including scene tests on real three.js and a test-only GLSL interpreter that runs the globe's surface shader on the CPU; accessibility tests tied to specific WCAG criteria (contrast, visible focus, pausable motion, controls that need no drag); and a dated verification record that states what was and was not tested.
+
+[Try StormSignal](https://stormsignal-weather.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/stormsignal) · [UI case study](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/ui-case-study.md) · [Verification record](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/verification.md)
+
+### Axiom SAT Math · reproducible math practice
+
+Free SAT-style math practice with original generated questions, timed sessions and worked review. There is no account, backend or runtime dependency: progress stays in the browser.
+
+**HTML · CSS · JavaScript ES modules · Playwright · axe-core · Cloudflare Pages**
+
+- **Reproducible questions:** 31 seeded templates across the four SAT Math domains. A template ID and a seed recreate the exact question, so any question can be shared as a link.
+- **Practice modes:** a 10-question 16-minute sprint, a 22-question 35-minute module or a custom set of 5, 10 or 20 questions. Sessions survive a reload, and a timed session keeps counting while the page is closed.
+- **Honest progress:** first-attempt accuracy by domain, retries of exactly the missed and skipped questions, and backups that are validated and regraded on import rather than trusted.
+- **Checked on every push and pull request:** every template is audited over 5,004 seeds; seeds 0–199 of every template (6,200 questions) are fingerprinted, so CI fails if a change alters one without a documented re-baseline; and Playwright drives Chromium, Firefox and WebKit through learner journeys, keyboard-only use and storage failures, with axe-core's WCAG 2.2 A/AA rules on every page.
+
+[Try Axiom SAT](https://axiom-sat.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/axiom-sat) · [Verification record](https://github.com/TARUNTEjjjj/axiom-sat/blob/main/docs/verification.md)
+
+<sub>Axiom is independent practice, not an official SAT test, and is not affiliated with or endorsed by College Board.</sub>
+
+## More of what I'm building
 
 | Area | Project | Work to explore |
 | --- | --- | --- |
@@ -31,19 +64,7 @@ I'm interested in **web development, software engineering, AI evaluation and ent
 | **Web and assessment tools** | [Avenquellis](https://github.com/TARUNTEjjjj/avenquellis-web) · [Question engine](https://github.com/TARUNTEjjjj/avenquellis-question-engine) · [Proof grader](https://github.com/TARUNTEjjjj/avenquellis-proof-grader) | A mathematics workspace using C++/WebAssembly, reproducible questions and bounded proof-certificate checks. Free-form model assessments remain proposals for human review. |
 | **Learning applications** | [Vedaris JEE](https://github.com/TARUNTEjjjj/vedaris-jee) · [Live workspace](https://vedaris-jee.pages.dev/) | Timed practice, historical-paper sessions, worked review, validated content and recoverable browser-local progress. |
 
-Other work: [Axiom SAT Math](https://github.com/TARUNTEjjjj/axiom-sat) for generated maths practice; [Forge](https://github.com/TARUNTEjjjj/forge-learning-academy) for browser-based Python and Git exercises; and [Forge for Mac](https://github.com/TARUNTEjjjj/forge-macos), a native SwiftUI study workspace.
-
-## Featured project · StormSignal
-
-[![StormSignal weather dashboard and interactive forecast explorer](https://raw.githubusercontent.com/TARUNTEjjjj/stormsignal/main/docs/images/dashboard-desktop.jpg)](https://stormsignal-weather.pages.dev/)
-
-**React · TypeScript · SVG · Responsive UI · Offline workflows**
-
-Explore a forecast by metric, time range and individual hour; inspect the exact values behind the graph; and switch between Data saver, Full workspace and Offline only. The interface distinguishes current forecasts, official warnings, missing sources and historical copies.
-
-[Try StormSignal](https://stormsignal-weather.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/stormsignal) · [UI case study](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/ui-case-study.md) · [Verification record](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/verification.md) · [Change history](https://github.com/TARUNTEjjjj/stormsignal/commits/main/)
-
-The case study includes expected behavior and reproducible review steps. Dated verification notes distinguish observed results from untested limits.
+Other work: [Forge](https://github.com/TARUNTEjjjj/forge-learning-academy) for browser-based Python and Git exercises; and [Forge for Mac](https://github.com/TARUNTEjjjj/forge-macos), a native SwiftUI study workspace.
 
 ## Tech stack
 
