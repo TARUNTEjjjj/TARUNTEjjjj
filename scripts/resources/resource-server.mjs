@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /** Optional local API and explicit refresh CLI. No network requests when serving. */
 import { createServer } from 'node:http';
+import { realpathSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { validateConfig, readCatalog, refreshCatalog, queryCatalog, createSeedSnapshot, writeSnapshot } from './resource-catalog.mjs';
 
 export function createResourceServer(configInput, { snapshotPath, allowedOrigins = [], now } = {}) {
@@ -91,6 +92,14 @@ export async function main(args = process.argv.slice(2)) {
   return server;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+// Node runs the real path of the script it is given, so import.meta.url has symlinks resolved while argv[1]
+// does not. Compare real paths: otherwise a symlinked invocation skipped main() and exited with status 0.
+function startedDirectly() {
+  if (!process.argv[1]) return false;
+  try { return realpathSync(resolve(process.argv[1])) === realpathSync(fileURLToPath(import.meta.url)); }
+  catch { return false; }
+}
+
+if (startedDirectly()) {
   main().catch((error) => { process.stderr.write(`Resource catalog: ${error.message}\n`); process.exitCode = 1; });
 }

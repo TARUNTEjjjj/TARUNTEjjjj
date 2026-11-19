@@ -80,13 +80,17 @@ export function rankResources(items, category, { now = Date.now(), limit = 12 } 
   const time = Date.parse(instant(now));
   const tokens = [...new Set(`${category.id} ${category.title}`.toLowerCase().split(/[^a-z0-9]+/).filter((token) => token.length > 2))];
   const unique = new Map();
+  const memberships = new Map();
   for (const item of items) {
     const key = String(item.id).startsWith('seed:') ? item.fullName.toLowerCase() : String(item.id);
     const prior = unique.get(key);
     if (!prior || (prior.stale && !item.stale) || ((Date.parse(item.fetchedAt) || 0) > (Date.parse(prior.fetchedAt) || 0))) unique.set(key, item);
+    // Keep every source that observed this repository so cache-less recovery can restore each membership.
+    if (!memberships.has(key)) memberships.set(key, new Set());
+    for (const query of item.sourceQueries ?? [item.sourceQuery]) memberships.get(key).add(query);
   }
   const verifiedNames = new Set([...unique.values()].filter((item) => item.provenance === 'github').map((item) => item.fullName.toLowerCase()));
-  return [...unique.values()].filter((item) => item.provenance !== 'seed' || !verifiedNames.has(item.fullName.toLowerCase())).map((item) => {
+  return [...unique].filter(([, item]) => item.provenance !== 'seed' || !verifiedNames.has(item.fullName.toLowerCase())).map(([key, item]) => {
     const searchable = `${item.fullName} ${item.description} ${item.topics.join(' ')}`.toLowerCase();
     const relevance = tokens.length ? tokens.filter((token) => searchable.includes(token)).length / tokens.length : 0;
     const popularity = Math.min(Math.log10(1 + (item.stars ?? 0)) / 6, 1);
@@ -94,7 +98,7 @@ export function rankResources(items, category, { now = Date.now(), limit = 12 } 
     const recency = Number.isFinite(age) ? 1 / (1 + age / 365) : 0;
     const score = Math.round((60 * relevance + 30 * popularity + 10 * recency) * 100) / 100;
     const reason = item.provenance === 'seed' ? `Curated starting point for ${category.title}; GitHub metadata not yet fetched.` : `${category.title} resource; ${item.stars} GitHub stars${item.stale ? '; cached metadata' : ''}.`;
-    return { ...item, score, reason };
+    return { ...item, sourceQueries: [...memberships.get(key)], score, reason };
   }).sort((a, b) => b.score - a.score || (b.stars ?? -1) - (a.stars ?? -1) || a.fullName.toLowerCase().localeCompare(b.fullName.toLowerCase(), 'en')).slice(0, limit);
 }
 
@@ -181,7 +185,7 @@ async function storeFromPublic(path, config) {
   if (!publicSnapshot) return null;
   const sourceCache = {};
   for (const source of sourcesFor(config)) {
-    const items = publicSnapshot.items.filter((item) => item.provenance === 'github' && item.category === source.category && item.sourceQuery === source.query);
+    const items = publicSnapshot.items.filter((item) => item.provenance === 'github' && item.category === source.category && item.sourceQueries.includes(source.query)).map(({ sourceQueries, ...item }) => ({ ...item, sourceQuery: source.query }));
     const excludedSeed = source.kind === 'seed' ? publicSnapshot.excludedSeeds.find((entry) => entry.category === source.category && `repo:${entry.fullName}` === source.query) : null;
     if (items.length || excludedSeed) sourceCache[source.key] = { ...source, items, pages: [], fetchedAt: items.map((item) => item.fetchedAt).sort().at(-1) ?? null, stale: items.some((item) => item.stale), excluded: !!excludedSeed, excludedId: excludedSeed?.repositoryId ?? null, nextRetryAt: null };
   }
@@ -210,8 +214,10 @@ async function loadPublicSnapshot(path, config) {
     const excludedSeeds = Array.isArray(parsed.excludedSeeds) ? parsed.excludedSeeds.filter((entry) => validSeeds.some((seed) => seed.fullName === entry?.fullName && seed.category === entry?.category)).map(({ category, fullName, repositoryId }) => ({ category, fullName, ...(positiveInteger(repositoryId) ? { repositoryId } : {}) })) : [];
     const items = parsed.items.map((item) => {
       if (item?.provenance === 'seed') return validSeeds.find((seed) => seed.fullName === item.fullName && seed.category === item.category);
-      const source = sources.find((entry) => entry.category === item?.category && entry.query === item?.sourceQuery);
-      return source ? restoreItem(item, config, source) : null;
+      // Snapshots written before sourceQueries existed record only one membership.
+      const queries = Array.isArray(item?.sourceQueries) ? item.sourceQueries : [item?.sourceQuery];
+      const restored = sources.filter((entry) => entry.category === item?.category && queries.includes(entry.query)).map((source) => restoreItem(item, config, source)).filter(Boolean);
+      return restored.length ? { ...restored[0], sourceQueries: restored.map((entry) => entry.sourceQuery) } : null;
     }).filter((item) => item && !isExcluded(item, excludedSeeds));
     const errors = Array.isArray(parsed.errors) ? parsed.errors.slice(0, 160).map((error) => ({ source: boundedText(error?.source, 300), message: boundedText(error?.message, 200) })) : [];
     return { items, errors, excludedSeeds, attemptedAt: isoDate(parsed.attemptedAt), status: parsed.status };
@@ -321,7 +327,7 @@ async function performRefresh(config, { snapshotPath, token = process.env.GITHUB
   for (const source of sources) {
     const old = previous?.sourceCache[source.key];
     const fail = (message, nextRetryAt = null) => {
-      errors.push({ source: `${source.category}: ${source.query}`, message });
+      errors.push({ source: `${source.category}: ${source.query}`, message: old ? message : message.replace('the previous source data was preserved', 'no previous source data was available') });
       sourceCache[source.key] = { ...source, items: old?.items ?? [], pages: old?.pages ?? [], fetchedAt: old?.fetchedAt ?? null, stale: true, excluded: old?.excluded ?? false, excludedId: old?.excludedId ?? null, nextRetryAt };
     };
     if (globalCooldown) { fail('GitHub refresh deferred until the recorded rate-limit cooldown ends.', globalCooldown); continue; }
