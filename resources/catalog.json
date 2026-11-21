@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "project": "TARUNTEjjjj",
   "title": "Tarun’s learning resource index",
-  "fetchedAt": "2026-11-20T12:12:59.678Z",
-  "attemptedAt": "2026-11-20T12:12:44.979Z",
+  "fetchedAt": "2026-11-21T11:49:32.732Z",
+  "attemptedAt": "2026-11-21T11:49:18.217Z",
   "status": "live",
   "errors": [],
   "excludedSeeds": [],
@@ -42,20 +42,20 @@
         "react",
         "teachers"
       ],
-      "stars": 459378,
-      "forks": 47477,
-      "pushedAt": "2026-11-20T11:02:57.000Z",
+      "stars": 459412,
+      "forks": 47405,
+      "pushedAt": "2026-11-21T11:22:25.000Z",
       "license": "BSD-3-Clause",
       "category": "programming",
       "sourceQuery": "repo:freeCodeCamp/freeCodeCamp",
-      "fetchedAt": "2026-11-20T12:12:47.769Z",
+      "fetchedAt": "2026-11-21T11:49:21.045Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "repo:freeCodeCamp/freeCodeCamp"
       ],
       "score": 68.31,
-      "reason": "Programming foundations resource; 459378 GitHub stars."
+      "reason": "Programming foundations resource; 459412 GitHub stars."
     },
     {
       "id": 63476337,
@@ -78,20 +78,20 @@
         "sorting-algorithms",
         "sorts"
       ],
-      "stars": 226331,
-      "forks": 51350,
+      "stars": 226357,
+      "forks": 51339,
       "pushedAt": "2026-11-13T04:28:36.000Z",
       "license": "MIT",
       "category": "programming",
       "sourceQuery": "repo:TheAlgorithms/Python",
-      "fetchedAt": "2026-11-20T12:12:50.133Z",
+      "fetchedAt": "2026-11-21T11:49:23.369Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "repo:TheAlgorithms/Python"
       ],
-      "score": 36.58,
-      "reason": "Programming foundations resource; 226331 GitHub stars."
+      "score": 36.55,
+      "reason": "Programming foundations resource; 226357 GitHub stars."
     },
     {
       "id": 19415064,
@@ -104,21 +104,21 @@
         "courses",
         "curriculum"
       ],
-      "stars": 211355,
-      "forks": 26169,
+      "stars": 211381,
+      "forks": 26151,
       "pushedAt": "2026-11-09T06:27:27.000Z",
       "license": "MIT",
       "category": "programming",
       "sourceQuery": "repo:ossu/computer-science",
-      "fetchedAt": "2026-11-20T12:12:52.494Z",
+      "fetchedAt": "2026-11-21T11:49:25.730Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "topic:computer-science topic:curriculum",
         "repo:ossu/computer-science"
       ],
-      "score": 36.33,
-      "reason": "Programming foundations resource; 211355 GitHub stars."
+      "score": 36.3,
+      "reason": "Programming foundations resource; 211381 GitHub stars."
     },
     {
       "id": 332961449,
@@ -135,20 +135,20 @@
         "python",
         "students"
       ],
-      "stars": 4012,
+      "stars": 4013,
       "forks": 127,
       "pushedAt": "2026-10-18T15:04:36.000Z",
       "license": null,
       "category": "programming",
       "sourceQuery": "topic:computer-science topic:curriculum",
-      "fetchedAt": "2026-11-20T12:12:45.387Z",
+      "fetchedAt": "2026-11-21T11:49:18.609Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "topic:computer-science topic:curriculum"
       ],
-      "score": 27.19,
-      "reason": "Programming foundations resource; 4012 GitHub stars."
+      "score": 27.17,
+      "reason": "Programming foundations resource; 4013 GitHub stars."
     },
     {
       "id": 75077147,
@@ -183,13 +183,13 @@
       "license": null,
       "category": "programming",
       "sourceQuery": "topic:computer-science topic:curriculum",
-      "fetchedAt": "2026-11-20T12:12:45.387Z",
+      "fetchedAt": "2026-11-21T11:49:18.609Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "topic:computer-science topic:curriculum"
       ],
-      "score": 24.41,
+      "score": 24.39,
       "reason": "Programming foundations resource; 836 GitHub stars."
     },
     {
@@ -214,13 +214,13 @@
       "license": "MIT",
       "category": "foundations",
       "sourceQuery": "topic:neural-network topic:from-scratch",
-      "fetchedAt": "2026-11-20T12:12:54.857Z",
+      "fetchedAt": "2026-11-21T11:49:28.110Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "topic:neural-network topic:from-scratch"
       ],
-      "score": 59.66,
+      "score": 59.65,
       "reason": "Neural network foundations resource; 936 GitHub stars."
     },
     {
@@ -229,20 +229,20 @@
       "url": "https://github.com/karpathy/micrograd",
       "description": "A tiny scalar-valued autograd engine and a neural net library on top of it with PyTorch-like API",
       "topics": [],
-      "stars": 19024,
-      "forks": 3026,
+      "stars": 19036,
+      "forks": 3027,
       "pushedAt": "2026-08-03T04:04:05.000Z",
       "license": "MIT",
       "category": "foundations",
       "sourceQuery": "repo:karpathy/micrograd",
-      "fetchedAt": "2026-11-20T12:12:57.258Z",
+      "fetchedAt": "2026-11-21T11:49:30.400Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "repo:karpathy/micrograd"
       ],
-      "score": 49.09,
-      "reason": "Neural network foundations resource; 19024 GitHub stars."
+      "score": 49.08,
+      "reason": "Neural network foundations resource; 19036 GitHub stars."
     },
     {
       "id": 152166877,
@@ -269,20 +269,20 @@
         "reinforcement-learning",
         "tensorflow"
       ],
-      "stars": 30089,
+      "stars": 30094,
       "forks": 5164,
       "pushedAt": "2024-08-18T08:02:36.000Z",
       "license": null,
       "category": "foundations",
       "sourceQuery": "repo:d2l-ai/d2l-en",
-      "fetchedAt": "2026-11-20T12:12:59.678Z",
+      "fetchedAt": "2026-11-21T11:49:32.732Z",
       "provenance": "github",
       "stale": false,
       "sourceQueries": [
         "repo:d2l-ai/d2l-en"
       ],
       "score": 25.46,
-      "reason": "Neural network foundations resource; 30089 GitHub stars."
+      "reason": "Neural network foundations resource; 30094 GitHub stars."
     }
   ]
 }
