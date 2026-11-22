@@ -7,16 +7,16 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg">
-  <img alt="Tarun Tej — Web Developer, AI/ML Enthusiast and AI Code Evaluator" src="assets/header-light.svg" width="100%">
+  <img alt="Tarun Tej — Python Programmer, AI/ML Learner and AI Code Evaluator" src="assets/header-light.svg" width="100%">
 </picture>
 
 ## About me
 
-**Web Developer · AI/ML Enthusiast · AI Code Evaluator**
+**Python Programmer · AI/ML Learner · AI Code Evaluator**
 
-I'm Tarun Tej. I build web applications with **React, TypeScript and JavaScript**, and explore **machine learning, mathematics and systems** through Python and C++ projects. My work includes a weather-evidence dashboard with an interactive 3D globe, reproducible neural-network experiments, exact arithmetic and learning tools.
+I'm Tarun Tej. I write **Python for machine learning and scientific computing (NumPy, PyTorch, scikit-learn)**, explore mathematical systems, and build interactive web applications with **React, TypeScript, and Three.js**. My work includes reproducible neural-network experiments from first principles, an interactive weather-evidence 3D globe, and exact arithmetic systems.
 
-I'm interested in **web development, software engineering, AI evaluation and entry-level AI/ML opportunities**. I care about readable interfaces, reliable behavior, reproducible tests and explaining the limits of a result.
+At Outlier and Mercor, I perform **Side-by-Side (SxS) model evaluations, AI code reviews, and adversarial prompt engineering** to test reasoning depth, instruction adherence, and code correctness for frontier LLMs. I am looking for entry-level opportunities in **Python programming, AI/ML engineering, AI code evaluation, and software development**.
 
 [Visit my portfolio](https://tarun-tej.pages.dev/) · [Browse my repositories](https://github.com/TARUNTEjjjj?tab=repositories)
 
@@ -38,26 +38,26 @@ A weather workspace that puts forecasts, satellite imagery, model disagreement a
 
 [Try StormSignal](https://stormsignal-weather.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/stormsignal) · [UI case study](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/ui-case-study.md) · [Verification record](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/verification.md)
 
-### Axiom SAT Math · reproducible math practice
+### Neural Math Lab · neural networks from first principles
 
-Free SAT-style math practice with original generated questions, timed sessions and worked review. There is no account, backend or runtime dependency: progress stays in the browser.
+[![Training and validation loss in the Neural Math Lab moons experiment](https://raw.githubusercontent.com/TARUNTEjjjj/neural-math-lab/main/examples/moons/learning.svg)](https://neural-math-lab.pages.dev/)
 
-**HTML · CSS · JavaScript ES modules · Playwright · axe-core · Cloudflare Pages**
+Understand neural network mechanics from core mathematical formulations rather than opaque abstractions. Neural Math Lab implements forward propagation, backpropagation, and optimization algorithms directly in NumPy.
 
-- **Reproducible questions:** 31 seeded templates across the four SAT Math domains. A template ID and a seed recreate the exact question, so any question can be shared as a link.
-- **Practice modes:** a 10-question 16-minute sprint, a 22-question 35-minute module or a custom set of 5, 10 or 20 questions. Sessions survive a reload, and a timed session keeps counting while the page is closed.
-- **Honest progress:** first-attempt accuracy by domain, retries of exactly the missed and skipped questions, and backups that are validated and regraded on import rather than trusted.
-- **Checked on every push and pull request:** every template is audited over 5,004 seeds; seeds 0–199 of every template (6,200 questions) are fingerprinted, so CI fails if a change alters one without a documented re-baseline; and Playwright drives Chromium, Firefox and WebKit through learner journeys, keyboard-only use and storage failures, with axe-core's WCAG 2.2 A/AA rules on every page.
+**Python · NumPy · scikit-learn · Optimization (SGD & Adam) · Cloudflare Pages**
 
-[Try Axiom SAT](https://axiom-sat.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/axiom-sat) · [Verification record](https://github.com/TARUNTEjjjj/axiom-sat/blob/main/docs/verification.md)
+- **First-principles mathematics:** Explicit tensor equations for Sigmoid, Tanh, and ReLU activations, numerical derivative validation with analytical gradient checks, and stable saturation tail calculations.
+- **Reproducible experiment suite:** Interactive decision boundary and learning curve reports for benchmark datasets (Moons, Concentric Circles, XOR, and real-world Iris measurements).
+- **In-depth diagnostics:** Real-time checkpoint replay, input-sensitivity derivatives, decision cost surfaces, and baseline comparisons against logistic regression.
+- **Zero-dependency portability:** Every experiment report is fully self-contained HTML/SVG, runnable completely offline without internet or server requirements.
 
-<sub>Axiom is independent practice, not an official SAT test, and is not affiliated with or endorsed by College Board.</sub>
+[Try Neural Math Lab](https://neural-math-lab.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/neural-math-lab)
 
 ## More of what I'm building
 
 | Area | Project | Work to explore |
 | --- | --- | --- |
-| **AI/ML foundations** | [Neural Math Lab](https://github.com/TARUNTEjjjj/neural-math-lab) · [Live experiments](https://neural-math-lab.pages.dev/) | Forward propagation, backpropagation, SGD and Adam implemented in NumPy; reproducible experiments, gradient checks and held-out evaluation. |
+| **Mathematics practice** | [Axiom SAT Math](https://github.com/TARUNTEjjjj/axiom-sat) · [Live app](https://axiom-sat.pages.dev/) | Free SAT-style math practice with 31 seeded reproducible templates, timed sessions, browser-saved progress, and Playwright verification. |
 | **AI learning interfaces** | [Attention Atlas](https://github.com/TARUNTEjjjj/attention-atlas) · [Live guide](https://attention-atlas.pages.dev/) | Interactive CNN, RNN and Transformer mathematics with editable inputs, matrix calculations and explanations. |
 | **Systems programming** | [PocketKV](https://github.com/TARUNTEjjjj/pocketkv) | A persistent C++20 key-value store with an append-only log, checksums, file locking, snapshots and recovery. |
 | **Mathematics and C++** | [AxiomMath](https://github.com/TARUNTEjjjj/axiom-math) | Exact rational arithmetic and expression parsing with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. |
@@ -70,7 +70,7 @@ Other work: [Forge](https://github.com/TARUNTEjjjj/forge-learning-academy) for b
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/stack-dark.svg">
-  <img alt="Tech stack: React, TypeScript, JavaScript, HTML5, CSS, Python, C++, C, NumPy, pandas, PyTorch, scikit-learn, Node.js, Git and GitHub" src="assets/stack-light.svg" width="100%">
+  <img alt="Tech stack: Python, C++, C, NumPy, pandas, PyTorch, scikit-learn, React, TypeScript, JavaScript, HTML5, CSS, Node.js, Git, GitHub" src="assets/stack-light.svg" width="100%">
 </picture>
 
 ## GitHub activity

@@ -3,22 +3,12 @@
   "name": "Tarun Tej",
   "greeting": "Hi there, I'm",
   "typing": [
-    "Web Developer · AI/ML Enthusiast",
-    "AI Code Evaluator",
-    "React · TypeScript · Python · C++",
-    "Building, testing and learning"
+    "Python Programmer & AI/ML Learner",
+    "AI Evaluator (SxS & Code Review)",
+    "NumPy · PyTorch · Python · TS",
+    "Web Developer (React & 3D Web)"
   ],
   "stack": [
-    {
-      "group": "Frontend",
-      "items": [
-        "react",
-        "typescript",
-        "javascript",
-        "html5",
-        "css"
-      ]
-    },
     {
       "group": "Languages",
       "items": [
@@ -34,6 +24,16 @@
         "pandas",
         "pytorch",
         "scikitlearn"
+      ]
+    },
+    {
+      "group": "Frontend",
+      "items": [
+        "react",
+        "typescript",
+        "javascript",
+        "html5",
+        "css"
       ]
     },
     {
