@@ -12,65 +12,73 @@
 
 ## About me
 
-**Python Programmer · AI/ML Learner · AI Code Evaluator**
+**Python & C++20 Systems Engineer · 3D WebGL2 Builder · AI Code Evaluator**
 
-I'm Tarun Tej. I write **Python for machine learning and scientific computing (NumPy, PyTorch, scikit-learn)**, explore mathematical systems, and build interactive web applications with **React, TypeScript, and Three.js**. My work includes reproducible neural-network experiments from first principles, an interactive weather-evidence 3D globe, and exact arithmetic systems.
+I'm Tarun Tej. I build **interactive 3D WebGL2 simulations and scientific tools** (React, TypeScript, GLSL shaders, Canvas2D fallbacks), **memory-safe C++20 and SwiftUI native applications**, and **first-principles NumPy/PyTorch neural networks** backed by property-based fuzzing, differential oracles, and accessibility testing.
 
-At Outlier and Mercor, I perform **Side-by-Side (SxS) model evaluations, AI code reviews, and adversarial prompt engineering** to test reasoning depth, instruction adherence, and code correctness for frontier LLMs. I am looking for entry-level opportunities in **Python programming, AI/ML engineering, AI code evaluation, and software development**.
+At Outlier and Mercor, I perform **Side-by-Side (SxS) model evaluations, AI code reviews, and adversarial prompt engineering** to test reasoning depth, instruction adherence, and code correctness for frontier LLMs. I am looking for opportunities in **Python / AI/ML engineering, C++20 / systems tooling, interactive 3D web engineering, and AI code evaluation**.
 
-[Visit my portfolio](https://tarun-tej.pages.dev/) · [Browse my repositories](https://github.com/TARUNTEjjjj?tab=repositories)
+[Visit my 3D portfolio](https://tarun-tej.pages.dev/) · [Browse my repositories](https://github.com/TARUNTEjjjj?tab=repositories)
 
 ## Featured projects
 
-### StormSignal · weather with evidence
+### StormSignal · 3D atmospheric Earth & weather with evidence
 
 [![StormSignal in Full workspace: the 3D globe shows NASA's 18 November 2026 satellite mosaic over North America, with New York City selected](https://raw.githubusercontent.com/TARUNTEjjjj/stormsignal/main/docs/images/aurora-globe-desktop.jpg)](https://stormsignal-weather.pages.dev/)
 
-A weather workspace that puts forecasts, satellite imagery, model disagreement and official warning coverage in one view, and never treats missing data as an all-clear.
+A weather workspace that pairs an interactive WebGL 2 3D globe and custom atmospheric shaders with multi-agency forecasts, model disagreement, and official warning coverage, never treating missing data as an all-clear.
 
-**React 19 · TypeScript · three.js / WebGL 2 · Cloudflare Pages Worker · Leaflet · NASA GIBS**
+**React 19 · TypeScript · three.js / WebGL 2 · Custom GLSL · Cloudflare Pages Worker · NASA GIBS**
 
-- **Interactive 3D globe:** NASA's newest finished daily satellite mosaic, with its date and coverage stated, day and night drawn from the sun's position, and active official warning outlines. It works fully by keyboard, and three.js loads only in Full workspace on browsers with WebGL 2.
-- **Official warnings with their limits shown:** the US National Weather Service, read straight from the browser, plus PAGASA (Philippines), BMKG (Indonesia), IMD's Kolkata district nowcast, India's regional SACHET feeds and participating WMO authorities through the project's own Cloudflare Worker gateway. An unreachable source is reported as unavailable.
-- **Three modes for weak connections:** Data saver (default; no 3D or background polling), Full workspace (globe, maps and reports) and Offline only (dated saved briefings and a self-contained field kit).
-- **Interactive forecast explorer:** inspect any hour by pointer or keyboard, read the exact values, compare two models and export CSV.
-- **Engineering record:** 708 application tests, including scene tests on real three.js and a test-only GLSL interpreter that runs the globe's surface shader on the CPU; accessibility tests tied to specific WCAG criteria (contrast, visible focus, pausable motion, controls that need no drag); and a dated verification record that states what was and was not tested.
+- **Interactive 3D globe & atmosphere:** NASA's finished daily satellite mosaic rendered with sun-position day/night lighting, Fresnel atmospheric rim & volumetric cloud shaders, live official warning overlays, and full keyboard orbit controls.
+- **Official warnings with honest limits:** Integrates NWS, PAGASA, BMKG, IMD, India's SACHET feeds, and participating WMO authorities via a Cloudflare Worker gateway; unreachable sources stay clearly marked unavailable.
+- **Resilient across connections:** Data saver mode (zero 3D or background polling), Full workspace (3D globe, maps, and reports), and Offline only mode (dated briefings and self-contained field kit).
+- **Engineering record:** Automated React/three.js scene suites, differential GLSL shader testing, WCAG AA accessibility verification (pausable motion, visible focus, keyboard-only controls), and published verification records.
 
 [Try StormSignal](https://stormsignal-weather.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/stormsignal) · [UI case study](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/ui-case-study.md) · [Verification record](https://github.com/TARUNTEjjjj/stormsignal/blob/main/docs/verification.md)
 
-### Neural Math Lab · neural networks from first principles
+### Neural Math Lab · 3D manifold studio & neural networks from first principles
 
 [![Training and validation loss in the Neural Math Lab moons experiment](https://raw.githubusercontent.com/TARUNTEjjjj/neural-math-lab/main/examples/moons/learning.svg)](https://neural-math-lab.pages.dev/)
 
-Understand neural network mechanics from core mathematical formulations rather than opaque abstractions. Neural Math Lab implements forward propagation, backpropagation, and optimization algorithms directly in NumPy.
+Understand neural network mechanics from exact tensor equations rather than opaque abstractions — featuring an interactive **WebGL2 3D Manifold Studio** (3D loss landscapes, decision surfaces, and 3D computation graphs) plus a Canvas2D software projection fallback.
 
-**Python · NumPy · scikit-learn · Optimization (SGD & Adam) · Cloudflare Pages**
+**Python · NumPy · PyTorch · WebGL2 / GLSL · Optimization (SGD & Adam) · Cloudflare Pages**
 
-- **First-principles mathematics:** Explicit tensor equations for Sigmoid, Tanh, and ReLU activations, numerical derivative validation with analytical gradient checks, and stable saturation tail calculations.
-- **Reproducible experiment suite:** Interactive decision boundary and learning curve reports for benchmark datasets (Moons, Concentric Circles, XOR, and real-world Iris measurements).
-- **In-depth diagnostics:** Real-time checkpoint replay, input-sensitivity derivatives, decision cost surfaces, and baseline comparisons against logistic regression.
-- **Zero-dependency portability:** Every experiment report is fully self-contained HTML/SVG, runnable completely offline without internet or server requirements.
+- **First-principles mathematics:** Explicit forward/backward passes for Sigmoid, Tanh, and ReLU activations, numerical finite-difference gradient/Hessian checks, and saturation stability analysis.
+- **Interactive 3D surface explorer:** Drag/keyboard 3D camera orbit, surface parameter morphing, and GPU-accelerated Phong lighting for XOR, Moons, Circles, and Iris experiments.
+- **Zero-dependency portability:** Self-contained offline HTML/SVG experiment reports and checkpoint replay without runtime server requirements.
 
 [Try Neural Math Lab](https://neural-math-lab.pages.dev/) · [Read the source](https://github.com/TARUNTEjjjj/neural-math-lab)
 
 ## More of what I'm building
 
-| Area | Project | Work to explore |
-| --- | --- | --- |
-| **Mathematics practice** | [Axiom SAT Math](https://github.com/TARUNTEjjjj/axiom-sat) · [Live app](https://axiom-sat.pages.dev/) | Free SAT-style math practice with 31 seeded reproducible templates, timed sessions, browser-saved progress, and Playwright verification. |
-| **AI learning interfaces** | [Attention Atlas](https://github.com/TARUNTEjjjj/attention-atlas) · [Live guide](https://attention-atlas.pages.dev/) | Interactive CNN, RNN and Transformer mathematics with editable inputs, matrix calculations and explanations. |
-| **Systems programming** | [PocketKV](https://github.com/TARUNTEjjjj/pocketkv) | A persistent C++20 key-value store with an append-only log, checksums, file locking, snapshots and recovery. |
-| **Mathematics and C++** | [AxiomMath](https://github.com/TARUNTEjjjj/axiom-math) | Exact rational arithmetic and expression parsing with explicit overflow bounds and differential checks against Python's `fractions.Fraction`. |
-| **Web and assessment tools** | [Avenquellis](https://github.com/TARUNTEjjjj/avenquellis-web) · [Question engine](https://github.com/TARUNTEjjjj/avenquellis-question-engine) · [Proof grader](https://github.com/TARUNTEjjjj/avenquellis-proof-grader) | A mathematics workspace using C++/WebAssembly, reproducible questions and bounded proof-certificate checks. Free-form model assessments remain proposals for human review. |
-| **Learning applications** | [Vedaris JEE](https://github.com/TARUNTEjjjj/vedaris-jee) · [Live workspace](https://vedaris-jee.pages.dev/) | Timed practice, historical-paper sessions, worked review, validated content and recoverable browser-local progress. |
+### Interactive 3D web platforms
 
-Other work: [Forge](https://github.com/TARUNTEjjjj/forge-learning-academy) for browser-based Python and Git exercises; and [Forge for Mac](https://github.com/TARUNTEjjjj/forge-macos), a native SwiftUI study workspace.
+| Area | Project | Highlights |
+| --- | --- | --- |
+| **Mathematics & geometry** | [Axiom SAT Math](https://github.com/TARUNTEjjjj/axiom-sat) · [Live app](https://axiom-sat.pages.dev/) | WebGL2 3D Geometry Studio (conic sections, solids, vector fields), 31 seeded templates, offline storage, and cross-browser Playwright/Axe verification. |
+| **AI learning interfaces** | [Attention Atlas](https://github.com/TARUNTEjjjj/attention-atlas) · [Live guide](https://attention-atlas.pages.dev/) | Interactive 3D WebGL2 tensor & self-attention manifold explorer alongside live CNN, RNN, and Transformer matrix explanations. |
+| **Differential geometry & WebAssembly** | [Avenquellis](https://github.com/TARUNTEjjjj/avenquellis-web) | WebGL2 PBR/Fresnel 3D minimal surfaces & geodesic tracer (Torus, Möbius, Saddle, Enneper) paired with C++/WebAssembly exact verification and offline Service Worker. |
+| **Timed JEE physics & math** | [Vedaris JEE](https://github.com/TARUNTEjjjj/vedaris-jee) · [Live workspace](https://vedaris-jee.pages.dev/) | Interactive WebGL2 3D physics/chemistry/math visualizers (PCM3D), historical papers, WCAG AA focus/keyboard support, and offline local progress. |
+| **Coding curriculum (Web)** | [Forge Learning Academy](https://github.com/TARUNTEjjjj/forge-learning-academy) | Interactive 3D WebGL2 learning archipelago + in-browser Python, C++, Git, and algorithms labs with reduced-motion fallback. |
+| **Portfolio** | [tarun-tej-portfolio](https://github.com/TARUNTEjjjj/tarun-tej-portfolio) · [Live site](https://tarun-tej.pages.dev/) | Custom sub-100 KB WebGL2 3D interactive developer portfolio engineered for instant first load and accessible motion. |
+
+### Native C++20, SwiftUI & verification tools
+
+| Domain | Project | Highlights |
+| --- | --- | --- |
+| **Systems storage (C++20)** | [PocketKV](https://github.com/TARUNTEjjjj/pocketkv) | Append-only KV store with CRC32 checksums, file locking, atomic snapshots, `--json` CLI output, `inspect` space-amplification forensics, and bitflip/truncation fuzz tests. |
+| **Exact arithmetic (C++20)** | [AxiomMath](https://github.com/TARUNTEjjjj/axiom-math) | Exact 64/128-bit rational & expression engine with `cf` continued-fraction convergents, `--json` repeating-decimal/IEEE-754 deltas, and Farey/parser fuzzing vs Python `Fraction`. |
+| **Question synthesis (C++20 & JS)** | [Avenquellis Question Engine](https://github.com/TARUNTEjjjj/avenquellis-question-engine) | Deterministic math problem engine with `analyze` / `analyze-bank` Shannon topic entropy telemetry and statistical/Unicode C++↔JS differential fuzzing. |
+| **Proof verification (C++20 & WASM)** | [Avenquellis Proof Grader](https://github.com/TARUNTEjjjj/avenquellis-proof-grader) | Bounded proof-certificate checker with `diagnose` dependency-DAG soundness analysis, `--pretty` output, and adversarial Bézout/Wilson/QWK calibration fuzzing. |
+| **Native desktop (SwiftUI)** | [Forge for Mac](https://github.com/TARUNTEjjjj/forge-macos) | Native macOS SwiftUI workspace with animated 3D orbital chapter prisms, interactive card tilt, `--diagnostics` JSON CLI, and property-based journal/search oracle checks. |
 
 ## Tech stack
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/stack-dark.svg">
-  <img alt="Tech stack: Python, C++, C, NumPy, pandas, PyTorch, scikit-learn, React, TypeScript, JavaScript, HTML5, CSS, Node.js, Git, GitHub" src="assets/stack-light.svg" width="100%">
+  <img alt="Tech stack: Python, C++, C, TypeScript, JavaScript, SwiftUI, React, WebGL2 / GLSL, WebAssembly, HTML5, CSS, NumPy, pandas, PyTorch, scikit-learn, CMake, Node.js, Git, GitHub" src="assets/stack-light.svg" width="100%">
 </picture>
 
 ## GitHub activity

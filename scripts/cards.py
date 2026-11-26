@@ -63,7 +63,8 @@ def _discrete(attribute: str, steps: list, period: float) -> str:
 
 
 def _network(t: Theme) -> tuple[str, str]:
-    """A small neural net with signals pulsing through it. Returns (svg, css)."""
+    """A 3D-projected isometric lattice + neural net with signals pulsing through it. Returns (svg, css)."""
+    import math
     xs, spacing, mid = (800, 910, 1020, 1130), 46, 150
     nodes = [[(xs[layer], mid + (j - (n - 1) / 2) * spacing) for j in range(n)]
              for layer, n in enumerate(LAYERS)]
@@ -77,9 +78,33 @@ def _network(t: Theme) -> tuple[str, str]:
         # Negative delays start every loop mid-flight, so nothing waits on page load.
         return f"animation-delay:{num(start % PERIOD - PERIOD)}s"
 
+    # Subtle 3D perspective wireframe octahedron & grid floor behind the neural layers
+    wire_parts = []
+    yaw, pitch = 0.55, 0.38
+    cy, sy = math.cos(yaw), math.sin(yaw)
+    cp, sp = math.cos(pitch), math.sin(pitch)
+    cx3, cy3 = 965.0, 150.0
+    verts = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+    proj = []
+    for vx, vy, vz in verts:
+        rx = vx * cy - vz * sy
+        rz = vx * sy + vz * cy
+        ry = vy * cp - rz * sp
+        depth = vy * sp + rz * cp + 3.4
+        scale = 148.0 / depth * 2.2
+        proj.append((cx3 + rx * scale, cy3 - ry * scale))
+    octa_edges = [(0, 2), (0, 3), (0, 4), (0, 5), (1, 2), (1, 3), (1, 4), (1, 5), (2, 4), (4, 3), (3, 5), (5, 2)]
+    wire_d = "".join(line(proj[a], proj[b]) for a, b in octa_edges)
+    wire_parts.append(f'<path class="wire3d" stroke="{t.cyan}" stroke-opacity="0.22" d="{wire_d}"/>')
+    for ring_r in (82, 118):
+        wire_parts.append(
+            f'<ellipse class="orbit3d" cx="{num(cx3)}" cy="{num(cy3)}" rx="{ring_r}" ry="{num(ring_r * 0.38)}" '
+            f'transform="rotate(-14 {num(cx3)} {num(cy3)})" fill="none" stroke="{t.violet}" stroke-opacity="0.2"/>'
+        )
+
     edges = [line(a, b) for layer in range(len(LAYERS) - 1)
              for a in nodes[layer] for b in nodes[layer + 1]]
-    parts = [f'<path class="edge" stroke="{t.border}" d="{"".join(edges)}"/>']
+    parts = wire_parts + [f'<path class="edge" stroke="{t.border}" d="{"".join(edges)}"/>']
 
     glows = {}
     for w, (source, branches) in enumerate(WAVES):
@@ -106,6 +131,10 @@ def _network(t: Theme) -> tuple[str, str]:
     travel = f"{HOP / PERIOD * 100:.2f}%"
     css = (
         ".edge{fill:none;stroke-width:1.2}"
+        ".wire3d{fill:none;stroke-width:1.1;stroke-dasharray:6 6;animation:wireSpin 14s linear infinite}"
+        "@keyframes wireSpin{to{stroke-dashoffset:-96}}"
+        ".orbit3d{stroke-dasharray:8 6;animation:orbitDash 18s linear infinite}"
+        "@keyframes orbitDash{to{stroke-dashoffset:112}}"
         ".pulse{fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:12 120;"
         f"stroke-dashoffset:-102;animation:pulse {num(PERIOD)}s cubic-bezier(.4,0,.6,1) infinite}}"
         f"@keyframes pulse{{0%{{stroke-dashoffset:14}}{travel}{{stroke-dashoffset:-102}}100%{{stroke-dashoffset:-102}}}}"
@@ -150,7 +179,7 @@ def header(profile: dict, t: Theme) -> str:
         network_css
         + ".caret{animation:blink 1.06s steps(1) infinite}@keyframes blink{50%{opacity:0}}"
         + ".still{display:none}"
-        + "@media (prefers-reduced-motion:reduce){.pulse,.glow,.caret{animation:none}"
+        + "@media (prefers-reduced-motion:reduce){.pulse,.glow,.caret,.wire3d,.orbit3d{animation:none}"
           ".typing{display:none}.still{display:inline}}"
     )
     body = (
@@ -232,9 +261,11 @@ def _pill(x: float, y: float, brand: Brand, t: Theme) -> str:
         outline = f' stroke="{t.border}"' if contrast(fill, t.panel) < 1.5 else ""
         mark = (f'<rect x="{num(TILE_INSET)}" y="{num(TILE_INSET)}" width="{TILE}" height="{TILE}" rx="9" '
                 f'fill="{fill}"{outline}/>{glyph}')
+    pw = _pill_width(brand)
     return (
         f'<g transform="translate({num(x)} {num(y)})">'
-        f'<rect width="{num(_pill_width(brand))}" height="{PILL_H}" rx="14" fill="{t.panel}" stroke="{t.border}"/>'
+        f'<rect width="{num(pw)}" height="{PILL_H}" rx="14" fill="{t.panel}" stroke="{t.border}"/>'
+        f'<line x1="14" y1="1.2" x2="{num(pw - 14)}" y2="1.2" stroke="#ffffff" stroke-opacity="0.16" stroke-width="1"/>'
         f"{mark}"
         f'<text x="{num(LABEL_X)}" y="{num(PILL_H / 2 + PILL_FONT * 0.36)}" class="sans" font-size="{PILL_FONT}" '
         f'font-weight="500" fill="{t.text}">{esc(brand.label)}</text>'
