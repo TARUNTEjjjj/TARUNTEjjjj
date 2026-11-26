@@ -3,10 +3,10 @@
   "name": "Tarun Tej",
   "greeting": "Hi there, I'm",
   "typing": [
-    "Python Programmer & AI/ML Learner",
-    "AI Evaluator (SxS & Code Review)",
-    "NumPy · PyTorch · Python · TS",
-    "Web Developer (React & 3D Web)"
+    "3D WebGL2 · C++20 · Python · SwiftUI",
+    "AI/ML Learner & AI Code Evaluator",
+    "Exact Math · Differential Verification",
+    "NumPy · PyTorch · TypeScript · React"
   ],
   "stack": [
     {
@@ -14,7 +14,20 @@
       "items": [
         "python",
         "cplusplus",
-        "c"
+        "c",
+        "typescript",
+        "javascript",
+        { "label": "SwiftUI" }
+      ]
+    },
+    {
+      "group": "3D & Web",
+      "items": [
+        "react",
+        { "label": "WebGL2 / GLSL" },
+        { "label": "WebAssembly" },
+        "html5",
+        "css"
       ]
     },
     {
@@ -27,18 +40,9 @@
       ]
     },
     {
-      "group": "Frontend",
-      "items": [
-        "react",
-        "typescript",
-        "javascript",
-        "html5",
-        "css"
-      ]
-    },
-    {
       "group": "Tools",
       "items": [
+        { "label": "CMake" },
         "nodedotjs",
         "git",
         "github"
